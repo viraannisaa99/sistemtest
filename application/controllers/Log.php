@@ -18,8 +18,8 @@ class Log extends CI_Controller
 
     public function index()
     {
-        $login_type = $this->session->userdata('login_type');
-        $data['login_type']  = $login_type;
+        // $login_type = $this->session->userdata('login_type');
+        // $data['login_type']  = $login_type;
         $data['page_function']   = __FUNCTION__;
         $data['page_active']       = array('Log');
         $data['page_name']        = 'log';

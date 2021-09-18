@@ -169,11 +169,11 @@
     <div class="clearfix">
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
             <?php
-            $akses = $this->session->userdata('login_type');
-            if ($akses == "Administrator") { ?>
+            if (userHasPermissions('user-add')) { ?>
                 <button type="button" class="btn bg-blue col-white waves-effect" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                     <span>Tambah Pengguna</span>
                 </button>
+
             <?php } ?>
             <div class="collapse" id="collapseExample">
                 <div class="card">

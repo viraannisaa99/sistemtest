@@ -33,23 +33,27 @@ class User_model extends CI_Model
 
     function getUserByUsernameByPass($username, $pass)
     {
-        $this->db->select('pg.*, rl.nama_role');
-        $this->db->from('user pg');
-        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
-        $this->db->join('role rl', 'rl.role_id = ur.role_id');
-        $this->db->where(array('pg.username' => $username, 'pg.password' => $pass, 'pg.status' => 1));
+        $this->db->select('*');
+        $this->db->from('user');
+        $this->db->where(array('username' => $username, 'password' => $pass, 'status' => 1));
 
         return $this->db->get()->result();
     }
 
-    // function getById($id)
+    // function getRoleByUser($user_id)
     // {
-    //     return $this->db->get_where('user pg', array('pg.user_id' => $id))->result();
+    //     $this->db->select('pg.*, rl.nama_role, rl.role_id');
+    //     $this->db->from('user pg');
+    //     $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
+    //     $this->db->join('role rl', 'rl.role_id = ur.role_id');
+    //     $this->db->where('pg.user_id', $user_id);
+
+    //     return $this->db->get()->result();
     // }
 
     function getById($id)
     {
-        $this->db->select('pg.*, rl.nama_role');
+        $this->db->select('pg.*, rl.nama_role, rl.role_id');
         $this->db->from('user pg');
         $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
         $this->db->join('role rl', 'rl.role_id = ur.role_id');

@@ -17,6 +17,7 @@ class Role extends Auth_Controller
         $this->load->helper('encrypt');
         $this->load->helper('datetime');
         $this->load->helper('pagination');
+        $this->load->helper('permission');
 
         $this->load->library('pagination');
     }
@@ -27,40 +28,49 @@ class Role extends Auth_Controller
         $page_data['page_active']     = array('Role');
         $page_data['page_name']       = 'role';
         $page_data['permission']      = $this->permission_model->getPermission()->result();
+        $page_data['role']            = $this;
 
         $this->load->view('index', $page_data);
     }
 
+    public function userHasPermissions($permission)
+    {
+        return in_array($permission, $this->session->userdata('permissions'));
+    }
+
     public function add()
     {
-        $data['nama_role']    = $this->input->post('nama_role');
-        $data['status']       = 1;
+        $page_data['permission'] = 'role-add';
+        $data['nama_role']       = $this->input->post('nama_role');
+        $data['status']          = 1;
 
-        $empty = check_empty_form($data, array('nama_role'));
-        if ($empty) {
-            $result = array('status' => 'error', 'msg' => 'Form penting tidak boleh kosong !');
-        } else {
-            $result = array('status' => 'success', 'msg' => 'Role berhasil ditambahkan');
-            $this->role_model->add($data);
-
-            $role_id = $this->db->insert_id();
-
-            $permission = $this->input->post('permission');
-            $role_permission = array();
-            foreach ($permission as $key => $val) {
-                $role_permission[] = array(
-                    'role_id' => $role_id,
-                    'permission_id' => $permission[$key],
-                );
-            }
-
-            if (is_array($permission)) {
-                $this->role_permission_model->insert_batch($role_permission);
+        if (userHasPermissions($page_data['permission'])) {
+            $empty = check_empty_form($data, array('nama_role'));
+            if ($empty) {
+                $result = array('status' => 'error', 'msg' => 'Form penting tidak boleh kosong !');
             } else {
-                $this->role_permission_model->insert($role_permission);
-            }
+                $result = array('status' => 'success', 'msg' => 'Role berhasil ditambahkan');
+                $this->role_model->add($data);
 
-            $this->log_model->addLog(userLog('Menambah Role', 'Menambah role "' . $data['nama_role']));
+                $role_id = $this->db->insert_id();
+
+                $permission = $this->input->post('permission');
+                $role_permission = array();
+                foreach ($permission as $key => $val) {
+                    $role_permission[] = array(
+                        'role_id' => $role_id,
+                        'permission_id' => $permission[$key],
+                    );
+                }
+
+                if (is_array($permission)) {
+                    $this->role_permission_model->insert_batch($role_permission);
+                } else {
+                    $this->role_permission_model->insert($role_permission);
+                }
+
+                $this->log_model->addLog(userLog('Menambah Role', 'Menambah role "' . $data['nama_role']));
+            }
         }
         echo json_encode($result);
         die;
@@ -81,41 +91,53 @@ class Role extends Auth_Controller
 
     public function update($param2 = '')
     {
-        $role_id               = decrypt($param2);
-        $data['nama_role']     = $this->input->post('nama_role');
+        $page_data['permission'] = 'role-update';
 
-        $this->role_model->update($role_id, $data);
-        $this->role_permission_model->delete($role_id);
+        if (userHasPermissions($page_data['permission'])) {
+            $role_id               = decrypt($param2);
+            $data['nama_role']     = $this->input->post('nama_role');
 
-        $permission = $this->input->post('permission');
-        $role_permission = array();
+            $this->role_model->update($role_id, $data);
+            $this->role_permission_model->delete($role_id);
 
-        foreach ($permission as $key => $val) {
-            $role_permission[] = array(
-                'role_id' => $role_id,
-                'permission_id' => $permission[$key],
-            );
-        }
+            $permission = $this->input->post('permission');
+            $role_permission = array();
 
-        if (is_array($permission)) {
-            $this->role_permission_model->insert_batch($role_permission);
+            foreach ($permission as $key => $val) {
+                $role_permission[] = array(
+                    'role_id' => $role_id,
+                    'permission_id' => $permission[$key],
+                );
+            }
+
+            if (is_array($permission)) {
+                $this->role_permission_model->insert_batch($role_permission);
+            } else {
+                $this->role_permission_model->insert($role_permission);
+            }
+
+            $this->log_model->addLog(userLog('Memperbaharui Role', 'Memperbaharui data role ' . $data['nama_role']));
+            echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil diperbaharui'));
         } else {
-            $this->role_permission_model->insert($role_permission);
+            echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak berhak mengupdate data role'));
         }
-
-        $this->log_model->addLog(userLog('Memperbaharui Role', 'Memperbaharui data role ' . $data['nama_role']));
-        echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil diperbaharui'));
         die;
     }
 
     public function delete($param2 = '')
     {
-        $role_id        = decrypt($param2);
-        $temp           = $this->role_model->getRoleById($role_id);
-        $data['status'] = 2;
-        $this->role_model->update($role_id, $data);
-        $this->log_model->addLog(userLog('Menghapus Role', 'Menghapus role '));
-        echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil dihapus'));
+        $page_data['permission'] = 'role-delete';
+
+        if (userHasPermissions($page_data['permission'])) {
+            $role_id        = decrypt($param2);
+            $temp           = $this->role_model->getRoleById($role_id);
+            $data['status'] = 2;
+            $this->role_model->update($role_id, $data);
+            $this->log_model->addLog(userLog('Menghapus Role', 'Menghapus role '));
+            echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil dihapus'));
+        } else {
+            echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak berhak menghapus data role'));
+        }
         die;
     }
 
@@ -127,8 +149,13 @@ class Role extends Auth_Controller
         foreach ($dt['data'] as $row) {
             $id       = encrypt($row->role_id);
             $li_btn   = array();
-            $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
-            $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
+
+            if (userHasPermissions('role-update')) {
+                $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
+            }
+            if (userHasPermissions('role-delete')) {
+                $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
+            }
 
             $th1 = ++$start . '.';
             $th2 = $row->nama_role;

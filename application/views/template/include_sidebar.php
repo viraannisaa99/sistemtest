@@ -3,10 +3,13 @@
             <?php
             echo $this->session->userdata('nama');
             ?>
-            <br>
             <?php
-            echo $this->session->userdata('login_type');
+            $role_id = $this->session->userdata('role_id');
+            foreach ($role_id as $row) {
+                echo $row . "\n";
+            }
             ?>
+            <br>
         </a></div>
     <div class="sidebar-wrapper">
         <ul class="nav">
@@ -23,15 +26,13 @@
                 </a>
             </li>
 
-            <?php
-            if ($this->session->userdata('login_type') == "Administrator") { ?>
-                <li class="nav-item ">
-                    <a class="nav-link" href="<?php echo base_url() . 'role' ?>">
-                        <i class="material-icons">person</i>
-                        <p>Role Panel</p>
-                    </a>
-                </li>
-            <?php } ?>
+            <li class="nav-item ">
+                <a class="nav-link" href="<?php echo base_url() . 'role' ?>">
+                    <i class="material-icons">person</i>
+                    <p>Role Panel</p>
+                </a>
+            </li>
+
             <li class="nav-item ">
                 <a class="nav-link" href="<?php echo base_url() . 'log' ?>">
                     <i class="material-icons">library_books</i>

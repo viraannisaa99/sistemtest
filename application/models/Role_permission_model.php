@@ -17,4 +17,8 @@ class Role_permission_model extends CI_Model
     {
         return $this->db->delete('role_permission', array('role_id' => $role_id));
     }
+
+    function check_role_permission()
+    {
+    }
 }

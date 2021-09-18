@@ -117,9 +117,12 @@
 <div class="content">
     <div class="clearfix">
         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <button type="button" class="btn bg-blue col-white waves-effect" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                <span>Tambah Role</span>
-            </button>
+            <?php
+            if (userHasPermissions('role-add')) { ?>
+                <button type="button" class="btn bg-blue col-white waves-effect" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <span>Tambah Role</span>
+                </button>
+            <?php } ?>
             <div class="collapse" id="collapseExample">
                 <div class="card">
                     <h4 class="card-header card-header-primary">Tambahkan Role</h4>
@@ -192,7 +195,6 @@
                 <div class="modal-body">
                     <?php echo form_open('role', array('id' => 'editModalForm', 'autocomplete' => "off")); ?>
                     <div class="col-md-12">
-
                         <div class="form-group form-float">
                             <p><b></strong> Nama Role </b></p>
                             <div class="input-group">

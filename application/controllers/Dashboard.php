@@ -19,8 +19,8 @@ class Dashboard extends Auth_Controller
     public function index()
     {
 
-        $login_type = $this->session->userdata('login_type');
-        $page_data['login_type']   = $login_type;
+        // $login_type = $this->session->userdata('login_type');
+        // $page_data['login_type']   = $login_type;
         $data['page_active']       = array('Dashboard');
         $data['page_name']         = 'dashboard';
         $data['jumlah_user']        = $this->user_model->countUserByLevel();
