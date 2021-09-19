@@ -9,6 +9,12 @@
         $('#editModalForm select[name=nama_role] option[value=""]').prop("selected", true).trigger('change');
     }
 
+    function show_form() {
+        $("#showModalForm")[0].reset();
+        $('.form-line').removeClass('focused');
+        $('#showModalForm select[name=nama_role] option[value=""]').prop("checked", true).trigger('change');
+    }
+
     function updateAllTable() {
         table.ajax.reload(null, false);
     }
@@ -47,6 +53,27 @@
                     title: resp['msg'],
                     type: resp['status']
                 });
+            }
+        });
+    }
+
+    function show_function(id) {
+        show_form();
+        $('#showModal').modal();
+        $.ajax({
+            method: 'POST',
+            url: '<?php echo base_url() . 'role/show/' ?>' + id,
+            dataType: 'json',
+            success: function(resp) {
+                if (resp.length > 0) {
+                    for (var i = 0; i < resp.length; i++) {
+                        id_show = resp[i]['user_id'];
+
+                        $('#nama_role').text(resp[i]['nama_role']);
+                        $('#action').text(resp[i]['action']);
+                    }
+                    $('#showModalForm div[class=form-line]').addClass('focused');
+                }
             }
         });
     }
@@ -109,7 +136,10 @@
             "columnDefs": [{
                 "targets": [0],
                 "className": "center"
-            }]
+            }],
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false
         });
     });
 </script>
@@ -143,82 +173,119 @@
                                         </label>
                                     </div>
                                 <?php endforeach; ?>
-                            </div>
-                            <?php echo form_close(); ?>
-                            <br><br>
-                            <div class="submit-footer">
-                                <button type="button" class="btn bg-grey col-white waves-effect" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><span>CANCEL</span></button>
-                                <button type="button" class="btn bg-green col-white waves-effect" onclick="add_function()"><span>SUBMIT</span></button>
+
+                                <?php echo form_close(); ?>
+                                <br><br>
+                                <div class="submit-footer">
+                                    <button type="button" class="btn bg-grey col-white waves-effect" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><span>CANCEL</span></button>
+                                    <button type="button" class="btn bg-green col-white waves-effect" onclick="add_function()"><span>SUBMIT</span></button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="clearfix"></div><br>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="card-header card-header-primary">
-                <h4 class="card-title ">Daftar Role Sistem</h4>
-                <p class="card-category"> Here is a subtitle for this table</p>
-            </div>
-            <div class="card-body">
-                <div class="col-md-12">
-                    <div class="table-responsive">
-                        <table class="table table-hover js-basic-example" id="table">
-                            <thead class="text-primary">
-                                <tr>
-                                    <th> # </th>
-                                    <th> Nama Role </th>
-                                    <th> Aksi </th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
+        <div class="clearfix"></div><br>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title ">Daftar Role Sistem</h4>
+                    <p class="card-category"> Here is a subtitle for this table</p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Edit Role</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <?php echo form_open('role', array('id' => 'editModalForm', 'autocomplete' => "off")); ?>
+                <div class="card-body">
                     <div class="col-md-12">
-                        <div class="form-group form-float">
-                            <p><b></strong> Nama Role </b></p>
-                            <div class="input-group">
-                                <div class="form-line">
-                                    <input type="text" name="nama_role" class="form-control">
-                                </div>
-                            </div>
-                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover js-basic-example" id="table">
+                                <thead class="text-primary">
+                                    <tr>
+                                        <th> # </th>
+                                        <th> Nama Role </th>
+                                        <th> Permission </th>
 
-                        <div class="form-group form-float">
-                            <p><b></strong> Pilih Role Permission </b></p>
-                            <?php foreach ($permission as $row) : ?>
-                                <div class="form-check-inline">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="permission[]" id="permission[]" value="<?php echo $row->permission_id; ?>"><?php echo $row->action; ?>
-                                    </label>
-                                </div>
-                            <?php endforeach; ?>
+                                        <th> Aksi </th>
+
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
                     </div>
-                    <?php echo form_close(); ?>
-                    <div class="modal-footer">
-                        <button type="button" class="btn bg-green waves-effect col-white" onClick="edit_function('save')">SAVE CHANGES</button>
-                        <button type="button" class="btn bg-grey waves-effect col-white" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Edit Role</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <?php echo form_open('role', array('id' => 'editModalForm', 'autocomplete' => "off")); ?>
+                        <div class="col-md-12">
+                            <div class="form-group form-float">
+                                <p><b></strong> Nama Role </b></p>
+                                <div class="input-group">
+                                    <div class="form-line">
+                                        <input type="text" name="nama_role" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group form-float">
+                                <p><b></strong> Pilih Role Permission </b></p>
+                                <?php foreach ($permission as $row) : ?>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" name="permission[]" id="permission[]" value="<?php echo $row->permission_id; ?>"><?php echo $row->action; ?>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php echo form_close(); ?>
+                        <div class="modal-footer">
+                            <button type="button" class="btn bg-green waves-effect col-white" onClick="edit_function('save')">SAVE CHANGES</button>
+                            <button type="button" class="btn bg-grey waves-effect col-white" data-dismiss="modal">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Show -->
+        <div class="modal fade" id="showModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Role Detail</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <?php echo form_open('role', array('id' => 'showModalForm', 'autocomplete' => "off")); ?>
+                        <table class="table">
+                            <tr>
+                                <th>Nama</th>
+                                <td>:</td>
+                                <td>
+                                    <div id="nama_role"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Permission</th>
+                                <td>:</td>
+                                <td>
+                                    <div id="action"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <?php echo form_close(); ?>
                     </div>
                 </div>
             </div>

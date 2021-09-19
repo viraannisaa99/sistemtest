@@ -39,19 +39,35 @@ class Log_model extends CI_Model
         $this->db->insert('log', $data);
     }
 
-    function getAllLog()
+    // function getAllLog()
+    // {
+    //     return $this->datatables
+    //         ->select('  
+    //         lg.log_id,
+    //         pg.nama,
+    //         lg.jenis_aksi,
+    //         lg.keterangan,
+    //         lg.tgl
+    //     ')
+    //         ->from('log lg')
+    //         ->join('user pg', 'pg.user_id = lg.user_id', 'left')
+    //         ->where('pg.status = 1 and lg.status=1')
+    //         ->generate();
+    // }
+
+
+    function getLog($limit, $start)
     {
-        return $this->datatables
-            ->select('  
-            lg.log_id,
-            pg.nama,
-            lg.jenis_aksi,
-            lg.keterangan,
-            lg.tgl
-        ')
-            ->from('log lg')
-            ->join('user pg', 'pg.user_id = lg.user_id', 'left')
-            ->where('pg.status = 1 and lg.status=1')
-            ->generate();
+        $this->db->join('user pg', 'pg.user_id = lg.user_id');
+        $this->db->from('log lg');
+        $this->db->order_by('lg.tgl', 'desc');
+        $this->db->limit($limit, $start);
+
+        return $this->db->get()->result();
+    }
+
+    function countAllLog()
+    {
+        return $this->db->get('log')->num_rows();
     }
 }

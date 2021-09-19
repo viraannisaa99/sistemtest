@@ -70,7 +70,6 @@
                         id_show = resp[i]['user_id'];
                         $('#nama').text(resp[i]['nama']);
                         $("#email").text(resp[i]['email']);
-                        $('#nama_role').text(resp[i]['nama_role']).prop("selected", true);
                         $("#username").text(resp[i]['username']);
                     }
                     $('#showModalForm div[class=form-line]').addClass('focused');
@@ -160,7 +159,10 @@
             "columnDefs": [{
                 "targets": [0],
                 "className": "center"
-            }]
+            }],
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false
         });
     });
 </script>
@@ -173,7 +175,6 @@
                 <button type="button" class="btn bg-blue col-white waves-effect" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                     <span>Tambah Pengguna</span>
                 </button>
-
             <?php } ?>
             <div class="collapse" id="collapseExample">
                 <div class="card">
@@ -313,22 +314,24 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="form-group form-float">
-                                <p>Pilih Hak Akses</p>
-                                <?php
-                                if (is_array($nama_role)) {
-                                    foreach ($nama_role as $row) : ?>
-                                        <div class="form-check-inline">
-                                            <label class="form-check-label">
-                                                <input type="checkbox" class="form-check-input" name="role_id[]" id="role_id[]" value="<?php echo $row->role_id; ?>"><?php echo $row->nama_role; ?>
-                                            </label>
-                                        </div>
+                        <?php if (userIsAdmin()) { ?>
+                            <div class="col-md-12">
+                                <div class="form-group form-float">
+                                    <p>Pilih Hak Akses</p>
+                                    <?php
+                                    if (is_array($nama_role)) {
+                                        foreach ($nama_role as $row) : ?>
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input" name="role_id[]" id="role_id[]" value="<?php echo $row->role_id; ?>"><?php echo $row->nama_role; ?>
+                                                </label>
+                                            </div>
 
-                                <?php endforeach;
-                                } ?>
+                                    <?php endforeach;
+                                    } ?>
+                                </div>
                             </div>
-                        </div>
+                        <?php } ?>
                         <?php echo form_close(); ?>
                         <div class="modal-footer">
                             <button type="button" class="btn bg-green waves-effect col-white" onClick="edit_function('save')">SAVE CHANGES</button>
@@ -371,13 +374,6 @@
                                 <td>:</td>
                                 <td>
                                     <div id="username"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Role</th>
-                                <td>:</td>
-                                <td>
-                                    <div id="nama_role"></div>
                                 </td>
                             </tr>
                         </table>

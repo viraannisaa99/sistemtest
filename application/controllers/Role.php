@@ -16,7 +16,6 @@ class Role extends Auth_Controller
         $this->load->helper('userlog');
         $this->load->helper('encrypt');
         $this->load->helper('datetime');
-        $this->load->helper('pagination');
         $this->load->helper('permission');
 
         $this->load->library('pagination');
@@ -27,15 +26,9 @@ class Role extends Auth_Controller
         $page_data['page_function']   = __FUNCTION__;
         $page_data['page_active']     = array('Role');
         $page_data['page_name']       = 'role';
+        $page_data['page_title']           = 'Role';
         $page_data['permission']      = $this->permission_model->getPermission()->result();
-        $page_data['role']            = $this;
-
         $this->load->view('index', $page_data);
-    }
-
-    public function userHasPermissions($permission)
-    {
-        return in_array($permission, $this->session->userdata('permissions'));
     }
 
     public function add()
@@ -76,6 +69,37 @@ class Role extends Auth_Controller
         die;
 
         $this->load->view('index', $page_data);
+    }
+
+    // public function show($param2 = '')
+    // {
+    //     $page_data['permission'] = 'role-show';
+
+    //     if (userHasPermissions($page_data['permission'])) {
+    //         $id = decrypt($param2);
+    //         $dt['data'] = $this->role_model->getRoleById($id);
+    //         foreach ($dt['data'] as $row) {
+    //             $row->role_id = encrypt($row->role_id);
+    //         }
+    //     }
+    //     echo json_encode($dt['data']);
+    //     die;
+    // }
+
+    public function show($param2 = '')
+    {
+        $page_data['permission'] = 'role-show';
+
+        if (userHasPermissions($page_data['permission'])) {
+            $id = decrypt($param2);
+            $dt = $this->role_model->join($id);
+
+            foreach ($dt as $row) {
+                $row->role_id = encrypt($row->role_id);
+            }
+        }
+        echo json_encode($dt);
+        die;
     }
 
     public function edit($param2 = '')
@@ -141,6 +165,40 @@ class Role extends Auth_Controller
         die;
     }
 
+    // public function pagination()
+    // {
+    //     $dt    = $this->role_model->getAllRole();
+    //     $start = $this->input->post('start');
+    //     $data  = array();
+    //     foreach ($dt['data'] as $row) {
+    //         $id       = encrypt($row->role_id);
+    //         $li_btn   = array();
+
+    //         if (userHasPermissions('role-show')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
+    //         }
+
+    //         if (userHasPermissions('role-update')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
+    //         }
+    //         if (userHasPermissions('role-delete')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
+    //         }
+
+    //         $permission = $this->role_model->getPermissionByRole($row->role_id);
+    //         $action = json_decode(json_encode(array_column($permission, 'action')), true);
+
+    //         $th1 = ++$start . '.';
+    //         $th2 = $row->nama_role;
+    //         $th3 = implode(", ", $action);
+    //         $th4 = generateBtnAction($li_btn);
+    //         $data[] = gathered_data(array($th1, $th2, $th3, $th4));
+    //     }
+    //     $dt['data'] = $data;
+    //     echo json_encode($dt);
+    //     die;
+    // }
+
     public function pagination()
     {
         $dt    = $this->role_model->getAllRole();
@@ -150,6 +208,10 @@ class Role extends Auth_Controller
             $id       = encrypt($row->role_id);
             $li_btn   = array();
 
+            if (userHasPermissions('role-show')) {
+                $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
+            }
+
             if (userHasPermissions('role-update')) {
                 $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
             }
@@ -157,13 +219,47 @@ class Role extends Auth_Controller
                 $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
             }
 
+            $permission = $this->role_model->getPermissionByRole($row->role_id);
+            $action = json_decode(json_encode(array_column($permission, 'action')), true);
+
             $th1 = ++$start . '.';
             $th2 = $row->nama_role;
-            $th3 = generateBtnAction($li_btn);
-            $data[] = gathered_data(array($th1, $th2, $th3));
+            $th3 = implode(", ", $action);
+            $th4 = generateBtnAction($li_btn);
+            $data[] = gathered_data(array($th1, $th2, $th3, $th4));
         }
         $dt['data'] = $data;
         echo json_encode($dt);
         die;
     }
+
+    // public function pagination()
+    // {
+    //     $dt    = $this->role_model->getAllRole();
+    //     $start = $this->input->post('start');
+    //     $data  = array();
+    //     foreach ($dt['data'] as $row) {
+    //         $id       = encrypt($row->role_id);
+    //         $li_btn   = array();
+
+    //         if (userHasPermissions('role-show')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
+    //         }
+
+    //         if (userHasPermissions('role-update')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
+    //         }
+    //         if (userHasPermissions('role-delete')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
+    //         }
+
+    //         $th1 = ++$start . '.';
+    //         $th2 = $row->nama_role;
+    //         $th3 = generateBtnAction($li_btn);
+    //         $data[] = gathered_data(array($th1, $th2, $th3));
+    //     }
+    //     $dt['data'] = $data;
+    //     echo json_encode($dt);
+    //     die;
+    // }
 }

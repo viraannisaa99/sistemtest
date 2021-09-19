@@ -7,3 +7,10 @@ function userHasPermissions($permission = '')
 
     return in_array($permission, $CI->session->userdata('permissions'));
 }
+
+function userIsAdmin()
+{
+    $CI = get_instance();
+
+    return in_array(1, $CI->session->userdata('role_id'));
+}

@@ -15,7 +15,6 @@ class User_model extends CI_Model
         return $hasil;
     }
 
-
     function countUserByLevel($nama_role = "")
     {
         $this->db->select('count(*) as total');
@@ -39,17 +38,6 @@ class User_model extends CI_Model
 
         return $this->db->get()->result();
     }
-
-    // function getRoleByUser($user_id)
-    // {
-    //     $this->db->select('pg.*, rl.nama_role, rl.role_id');
-    //     $this->db->from('user pg');
-    //     $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
-    //     $this->db->join('role rl', 'rl.role_id = ur.role_id');
-    //     $this->db->where('pg.user_id', $user_id);
-
-    //     return $this->db->get()->result();
-    // }
 
     function getById($id)
     {
@@ -83,34 +71,26 @@ class User_model extends CI_Model
                 pg.nama,
                 pg.email,
                 pg.username,
-                rl.nama_role,
                 pg.status,
             ')
             ->from('user pg')
-            ->join('user_role ur', 'pg.user_id = ur.user_id')
-            ->join('role rl', 'rl.role_id = ur.role_id')
             ->where('pg.status = 1')
-            ->group_by('pg.user_id')
             ->generate();
     }
-
-    // function getAllUser()
-    // {
-    //     return $this->datatables
-    //         ->select('  
-    //             pg.user_id,
-    //             pg.nama,
-    //             pg.email,
-    //             pg.username,
-    //             pg.status,
-    //         ')
-    //         ->from('user pg')
-    //         ->where('pg.status = 1')
-    //         ->generate();
-    // }
 
     public function delete($id)
     {
         return $this->db->delete('user', array('user_id' => $id));
+    }
+
+    function getRoleByUser($id)
+    {
+        $this->db->select('rl.nama_role');
+        $this->db->from('user pg');
+        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
+        $this->db->join('role rl', 'rl.role_id = ur.role_id');
+        $this->db->where('pg.user_id', $id);
+
+        return $this->db->get()->result();
     }
 }

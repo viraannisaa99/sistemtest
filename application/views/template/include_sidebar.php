@@ -1,39 +1,33 @@
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="<?php echo base_url() . 'assets/' ?>img/apple-icon.png">
-    <div class="logo"><a href="http://www.creative-tim.com" class="simple-text logo-normal">
+    <div class="logo"><a href="<?php echo base_url() . 'dashboard' ?>" class="simple-text logo-normal">
             <?php
             echo $this->session->userdata('nama');
-            ?>
-            <?php
-            $role_id = $this->session->userdata('role_id');
-            foreach ($role_id as $row) {
-                echo $row . "\n";
-            }
             ?>
             <br>
         </a></div>
     <div class="sidebar-wrapper">
         <ul class="nav">
-            <li class="nav-item active">
+            <li class="<?php echo  $page_name == 'dashboard' ? 'active' : '' ?>">
                 <a class="nav-link" href="<?php echo base_url() . 'dashboard' ?>">
                     <i class=" material-icons">dashboard</i>
                     <p>Dashboard</p>
                 </a>
             </li>
-            <li class="nav-item ">
+            <li class="<?php echo  $page_name == 'user' ? 'active' : '' ?>">
                 <a class="nav-link" href="<?php echo base_url() . 'user' ?>">
                     <i class="material-icons">person</i>
                     <p>User Panel</p>
                 </a>
             </li>
 
-            <li class="nav-item ">
+            <li class="<?php echo  $page_name == 'role' ? 'active' : '' ?>">
                 <a class="nav-link" href="<?php echo base_url() . 'role' ?>">
                     <i class="material-icons">person</i>
                     <p>Role Panel</p>
                 </a>
             </li>
 
-            <li class="nav-item ">
+            <li class="<?php echo  $page_name == 'log' ? 'active' : '' ?>">
                 <a class="nav-link" href="<?php echo base_url() . 'log' ?>">
                     <i class="material-icons">library_books</i>
                     <p>Log System</p>

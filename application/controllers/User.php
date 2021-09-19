@@ -26,6 +26,7 @@ class User extends Auth_Controller
         $page_data['page_function']   = __FUNCTION__;
         $page_data['page_active']     = array('User');
         $page_data['page_name']       = 'user';
+        $page_data['page_title']      = 'User';
         $page_data['nama_role']       = $this->role_model->getRoles()->result();
         $page_data['user']            = $this;
         // $page_data['hasPermission']   = $this->userHasPermissions($param);
@@ -120,32 +121,35 @@ class User extends Auth_Controller
     {
         $page_data['permission'] = 'user-update';
 
-        if ($this->userHasPermissions($page_data['permission'])) {
+        if (userHasPermissions($page_data['permission'])) {
             $user_id          = decrypt($param2);
             $data['nama']     = $this->input->post('nama');
             $data['email']    = $this->input->post('email');
             $data['username'] = $this->input->post('username');
 
             $this->user_model->update($user_id, $data);
-            $this->user_role_model->delete($user_id);
 
-            $role_id = $this->input->post('role_id');
+            if (userIsAdmin()) {
+                $this->user_role_model->delete($user_id);
 
-            $user_role = array();
-            foreach ($role_id as $key => $val) {
-                $user_role[] = array(
-                    'user_id' => $user_id,
-                    'role_id' => $role_id[$key],
-                );
-            }
+                $role_id = $this->input->post('role_id');
 
-            if (is_array($role_id)) {
-                $this->user_role_model->insert_batch($user_role);
+                $user_role = array();
+                foreach ($role_id as $key => $val) {
+                    $user_role[] = array(
+                        'user_id' => $user_id,
+                        'role_id' => $role_id[$key],
+                    );
+                }
+
+                if (is_array($role_id)) {
+                    $this->user_role_model->insert_batch($user_role);
+                } else {
+                    $this->user_role_model->insert($user_role);
+                }
             } else {
-                $this->user_role_model->insert($user_role);
+                $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
             }
-
-            $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
 
             echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
         } else {
@@ -158,7 +162,7 @@ class User extends Auth_Controller
     {
         $page_data['permission'] = 'user-delete';
 
-        if ($this->userHasPermissions($page_data['permission'])) {
+        if (userHasPermissions($page_data['permission'])) {
             $user_id        = decrypt($param2);
             $temp           = $this->user_model->getById($user_id);
             $data['status'] = 2;
@@ -187,34 +191,6 @@ class User extends Auth_Controller
         die;
     }
 
-    // public function pagination()
-    // {
-    //     $dt    = $this->user_model->getAllUser();
-    //     $start = $this->input->post('start');
-    //     $data  = array();
-    //     $acc = array();
-    //     foreach ($dt['data'] as $row) {
-    //         $id       = encrypt($row->user_id);
-    //         $li_btn   = array();
-
-    //         $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
-    //         $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
-    //         $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
-
-    //         $th1 = ++$start . '.';
-    //         $th2 = $row->nama;
-    //         $th3 = $row->email;
-    //         $th4 = $row->username;
-    //         $th5 = $row->nama_role;
-
-    //         $th6 = generateBtnAction($li_btn);
-    //         $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5, $th6));
-    //     }
-    //     $dt['data'] = $data;
-    //     echo json_encode($dt);
-    //     die;
-    // }
-
     public function pagination()
     {
         $dt    = $this->user_model->getAllUser();
@@ -228,17 +204,22 @@ class User extends Auth_Controller
                 $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
             }
             if (userHasPermissions('user-update')) {
-                $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
+                if ($this->session->userdata('user_id') == ($row->user_id) || userIsAdmin()) {
+                    $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
+                }
             }
             if (userHasPermissions('user-delete')) {
                 $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
             }
 
+            $role = $this->user_model->getRoleByUser($row->user_id);
+            $nama_role = json_decode(json_encode(array_column($role, 'nama_role')), true);
+
             $th1 = ++$start . '.';
             $th2 = $row->nama;
             $th3 = $row->email;
             $th4 = $row->username;
-            $th5    = $row->nama_role;
+            $th5    = implode(", ", $nama_role);
             $th6    = generateBtnAction($li_btn);
             $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5, $th6));
         }

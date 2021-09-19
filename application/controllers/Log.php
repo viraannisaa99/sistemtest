@@ -14,37 +14,26 @@ class Log extends CI_Controller
         $this->load->helper('userlog');
         $this->load->helper('encrypt');
         $this->load->helper('datetime');
+
+        $this->config->load('pagination', TRUE);
+        $this->load->library('pagination');
     }
 
     public function index()
     {
-        // $login_type = $this->session->userdata('login_type');
-        // $data['login_type']  = $login_type;
         $data['page_function']   = __FUNCTION__;
         $data['page_active']       = array('Log');
         $data['page_name']        = 'log';
+        $data['page_title']        = 'Log';
 
-        $this->load->view('index', $data);
-    }
+        $config['base_url'] = site_url('log/index');
+        $config['total_rows'] = $this->log_model->countAllLog();
+        $config['per_page']     = 15;
 
-    public function pagination()
-    {
-        $dt    = $this->log_model->getAllLog();
-        $no    = 0;
-        $start = $this->input->post('start');
-        $data  = array();
-        foreach ($dt['data'] as $row) {
-            ++$no;
-            $th1    = ++$start;
-            $th2    = $row->nama;
-            $th3    = $row->jenis_aksi;
-            $th4    = $row->keterangan;
-            $th5    = time_passed(strtotime($row->tgl));
-            $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5));
-        }
-        $dt['data'] = $data;
-        echo json_encode($dt);
-        die;
+        $this->pagination->initialize($config);
+        $data['start']  = $this->uri->segment(3);
+        $data['log']    = $this->log_model->getLog($config['per_page'], $data['start']);
+        $data['links'] = $this->pagination->create_links();
 
         $this->load->view('index', $data);
     }
