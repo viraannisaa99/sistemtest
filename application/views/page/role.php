@@ -203,9 +203,7 @@
                                         <th> # </th>
                                         <th> Nama Role </th>
                                         <th> Permission </th>
-
                                         <th> Aksi </th>
-
                                     </tr>
                                 </thead>
                             </table>

@@ -151,7 +151,7 @@
             <div class="card">
                 <div class="card-header card-header-primary">
                     <h4 class="card-title ">TOP 30 User Activity</h4>
-                    <p class="card-category"> Here is a subtitle for this table</p>
+                    <p class="card-category"> List Top 30 Aktivitas User</p>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-hover list-group-striped">

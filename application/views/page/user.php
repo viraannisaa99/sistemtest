@@ -251,13 +251,12 @@
                 </div>
             </div>
         </div>
-
         <div class="clearfix"></div><br>
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header card-header-primary">
                     <h4 class="card-title ">Daftar User Sistem</h4>
-                    <p class="card-category"> Here is a subtitle for this table</p>
+                    <p class="card-category"> List Daftar User Sistem</p>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
