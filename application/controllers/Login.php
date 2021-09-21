@@ -30,12 +30,7 @@ class Login extends CI_Controller
             $this->log_model->addLog(userLog('Login', $cek[0]->nama . ' Login ke System'));
 
             $this->role();
-
-            if ($cek[0]->nama_role == "Administrator") {
-                redirect(base_url() . 'dashboard');
-            } else {
-                redirect(base_url() . 'user');
-            }
+            redirect(base_url() . 'dashboard');
         } else {
             $this->session->set_flashdata('error', '<br>Username atau Password tidak terdaftar');
             redirect(base_url() . 'login');
