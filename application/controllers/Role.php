@@ -26,8 +26,9 @@ class Role extends Auth_Controller
         $page_data['page_function']   = __FUNCTION__;
         $page_data['page_active']     = array('Role');
         $page_data['page_name']       = 'role';
-        $page_data['page_title']           = 'Role';
+        $page_data['page_title']      = 'Role';
         $page_data['permission']      = $this->permission_model->getPermission()->result();
+
         $this->load->view('index', $page_data);
     }
 
@@ -70,22 +71,6 @@ class Role extends Auth_Controller
 
         $this->load->view('index', $page_data);
     }
-
-    // public function show($param2 = '')
-    // {
-    //     $page_data['permission'] = 'role-show';
-
-    //     if (userHasPermissions($page_data['permission'])) {
-    //         $id = decrypt($param2);
-    //         $dt = $this->role_model->getPermissionAction($id);
-
-    //         foreach ($dt as $row) {
-    //             $row->role_id = encrypt($row->role_id);
-    //         }
-    //     }
-    //     echo json_encode($dt);
-    //     die;
-    // }
 
     public function show($param2 = '')
     {

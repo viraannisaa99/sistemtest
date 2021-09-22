@@ -5,16 +5,6 @@ if (!defined('BASEPATH'))
 class Log_model extends CI_Model
 {
 
-    function getLogToday()
-    {
-        $this->db->join('user pg', 'pg.user_id = lg.user_id');
-        $this->db->order_by('lg.log_id', 'desc');
-        $this->db->where('lg.status', 1);
-        $this->db->where('lg.tgl', date('Y-m-d'));
-        $this->db->from('log lg');
-        return $this->db->get()->result();
-    }
-
     function countLog()
     {
         $this->db->select('count(*) as total');
@@ -34,31 +24,9 @@ class Log_model extends CI_Model
         }
     }
 
-    function addLog_transact($data)
-    {
-        $this->db->insert('log', $data);
-    }
-
-    // function getAllLog()
-    // {
-    //     return $this->datatables
-    //         ->select('  
-    //         lg.log_id,
-    //         pg.nama,
-    //         lg.jenis_aksi,
-    //         lg.keterangan,
-    //         lg.tgl
-    //     ')
-    //         ->from('log lg')
-    //         ->join('user pg', 'pg.user_id = lg.user_id', 'left')
-    //         ->where('pg.status = 1 and lg.status=1')
-    //         ->generate();
-    // }
-
-
     function getLog($limit, $start)
     {
-        $this->db->join('user pg', 'pg.user_id = lg.user_id');
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
         $this->db->from('log lg');
         $this->db->order_by('lg.tgl', 'desc');
         $this->db->limit($limit, $start);

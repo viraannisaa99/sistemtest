@@ -9,16 +9,17 @@
             <div class="body">
                 <?php echo form_open('login/oauth', array('id' => 'add-form', 'autocomplete' => "off")); ?>
                 <?php if ($this->session->flashdata('error')) { ?>
-                    <div class="clearfix alert alert-danger">
-                        <strong>Oopss !</strong> <?php echo $this->session->flashdata('error'); ?>
-                    </div>
+                <div class="clearfix alert alert-danger">
+                    <strong>Oopss !</strong> <?php echo $this->session->flashdata('error'); ?>
+                </div>
                 <?php } ?>
                 <div class="input-group">
                     <span class="input-group-addon">
                         <i class="material-icons">person</i>
                     </span>
                     <div class="form-line">
-                        <input type="text" class="form-control" name="username" placeholder="Username" required autofocus>
+                        <input type="text" class="form-control" name="username" placeholder="Username" required
+                            autofocus>
                     </div>
                 </div>
                 <div class="input-group">
@@ -35,6 +36,8 @@
                     </div>
                 </div>
                 <?php echo form_close(); ?>
+
+                <a href="<?php echo $loginURL; ?>">Login With Google</a>
             </div>
         </div>
     </div>

@@ -62,4 +62,15 @@ class Role_model extends CI_Model
             ->join('role rl', 'rl.role_id = rp.role_id')
             ->get_where('permission p', array('rp.role_id' => $id))->result();
     }
+
+    function getRoleByUser($id)
+    {
+        $this->db->select('rl.nama_role');
+        $this->db->from('users pg');
+        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
+        $this->db->join('role rl', 'rl.role_id = ur.role_id');
+        $this->db->where('pg.user_id', $id);
+
+        return $this->db->get()->result();
+    }
 }

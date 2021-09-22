@@ -29,7 +29,6 @@ class User extends Auth_Controller
         $page_data['page_title']      = 'User';
         $page_data['nama_role']       = $this->role_model->getRoles()->result();
         $page_data['user']            = $this;
-        // $page_data['hasPermission']   = $this->userHasPermissions($param);
 
         $this->load->view('index', $page_data);
     }
@@ -38,11 +37,12 @@ class User extends Auth_Controller
     {
         print_r($this->session->userdata('role_id'));
         print_r($this->session->userdata('permissions'));
+        print_r($this->session->userdata('user_id'));
+        print_r($this->session->userdata('userData'));
     }
 
     public function add()
     {
-
         $page_data['permission'] = 'user-add';
         $data['nama']            = $this->input->post('nama');
         $data['email']           = $this->input->post('email');
@@ -212,7 +212,7 @@ class User extends Auth_Controller
                 $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
             }
 
-            $role = $this->user_model->getRoleByUser($row->user_id);
+            $role = $this->role_model->getRoleByUser($row->user_id);
             $nama_role = json_decode(json_encode(array_column($role, 'nama_role')), true);
 
             $th1 = ++$start . '.';
@@ -226,5 +226,16 @@ class User extends Auth_Controller
         $dt['data'] = $data;
         echo json_encode($dt);
         die;
+    }
+
+    public function profile()
+    {
+        if (!$this->session->userdata('logged_in')) {
+            redirect('/user/profile');
+        }
+
+        $data['userData'] = $this->session->userdata('userData');
+
+        $this->load->view('profile', $data);
     }
 }
