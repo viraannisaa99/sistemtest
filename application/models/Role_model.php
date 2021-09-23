@@ -55,12 +55,12 @@ class Role_model extends CI_Model
 
         return $this->db->get()->result();
     }
-
     function getPermissionAction($id)
     {
         return $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id')
             ->join('role rl', 'rl.role_id = rp.role_id')
-            ->get_where('permission p', array('rp.role_id' => $id))->result();
+            ->get_where('permission p', array('rp.role_id' => $id))
+            ->result();
     }
 
     function getRoleByUser($id)
@@ -72,5 +72,50 @@ class Role_model extends CI_Model
         $this->db->where('pg.user_id', $id);
 
         return $this->db->get()->result();
+    }
+
+    var $order_column = array(null, "nama_role", null, null);
+
+    function getSearch()
+    {
+        $this->db->select("role_id, nama_role");
+        $this->db->from("role");
+
+        $post = $this->input->post();
+
+        if (isset($post["search"]["value"])) {
+            $this->db->like("nama_role", $post["search"]["value"]);
+        }
+        if (isset($post["order"])) {
+            $this->db->order_by($this->order_column[$post['order']['0']['column']], $post['order']['0']['dir']);
+        } else {
+            $this->db->order_by("role_id");
+        }
+    }
+
+    function datatables()
+    {
+        $this->getSearch();
+        $post = $this->input->post();
+
+        if ($post["length"] != -1) {
+            $this->db->limit($post['length'], $post['start']);
+        }
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    function getFiltered()
+    {
+        $this->getSearch();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    function getAll()
+    {
+        $this->db->select("*");
+        $this->db->from("role");
+        return $this->db->count_all_results();
     }
 }

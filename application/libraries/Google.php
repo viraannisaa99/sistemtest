@@ -23,7 +23,6 @@ class Google
 
 		$this->client->setAccessType('online');
 
-
 		if ($this->ci->session->userdata('refreshToken') != null) {
 			$this->loggedIn = true;
 

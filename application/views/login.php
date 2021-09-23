@@ -37,7 +37,10 @@
                 </div>
                 <?php echo form_close(); ?>
 
-                <a href="<?php echo $loginURL; ?>">Login With Google</a>
+                <a role="button" style="text-transform:none" href="<?php echo $loginURL; ?>"><img width="20px"
+                        style="margin-bottom:3px; margin-right:5px" alt="Google sign-in"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                    Login with Google</a>
             </div>
         </div>
     </div>

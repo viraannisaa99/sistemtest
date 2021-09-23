@@ -63,17 +63,21 @@ class Login extends CI_Controller
             $userData['locale']             = !empty($gpInfo['locale']) ? $gpInfo['locale'] : '';
             $userData['picture']            = !empty($gpInfo['picture']) ? $gpInfo['picture'] : '';
 
-            $this->login_model->checkUser($userData); // insert atau update user data ke database
-
             $cek = $this->user_model->getUserByEmail($userData['email']);
 
-            $this->session->set_userdata('user_id', $cek[0]->user_id);
-            $this->session->set_userdata('logged_in', true);
-            $this->session->set_userdata('userData', $userData);
+            if ($cek) {
+                $this->login_model->checkUser($userData); // update user data ke database
+                $this->session->set_userdata('user_id', $cek[0]->user_id);
+                $this->session->set_userdata('logged_in', true);
+                $this->session->set_userdata('userData', $userData);
 
-            $this->role();
+                $this->role();
 
-            redirect('user/profile/');
+                redirect('user/profile/');
+            } else {
+                $this->session->set_flashdata('error', 'Anda Bukan User di Sistem Ini');
+                redirect(base_url() . 'login');
+            }
         }
     }
 

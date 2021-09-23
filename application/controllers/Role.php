@@ -75,18 +75,26 @@ class Role extends Auth_Controller
     public function show($param2 = '')
     {
         $page_data['permission'] = 'role-show';
+        $data = array();
 
         if (userHasPermissions($page_data['permission'])) {
             $id = decrypt($param2);
-            $dt = $this->role_model->getPermissionAction($id);
+            $dt = $this->role_model->getRoleById($id);
 
             foreach ($dt as $row) {
-                $row->role_id = encrypt($row->role_id);
+                $nama_role = $row->nama_role;
             }
+
+            $perm = $this->role_model->getPermissionByRole($id);
+            foreach ($perm as $rows) {
+                $action[] = " " . $rows->action;
+            }
+            $data[] = array("nama_role" => $nama_role, "action" => $action);
         }
-        echo json_encode($dt);
+        echo json_encode($data);
         die;
     }
+
 
     public function edit($param2 = '')
     {
@@ -151,19 +159,41 @@ class Role extends Auth_Controller
         die;
     }
 
+    // public function show($param2)
+    // {
+    //     $page_data['permission'] = 'role-show';
+
+    //     if (userHasPermissions($page_data['permission'])) {
+    //         $dt = $this->role_model->getRoles();
+    //         $data = array();
+
+    //         foreach ($dt as $row) {
+    //             $permission = $this->role_model->getPermissionByRole($row->role_id);
+    //             $action = json_decode(json_encode(array_column($permission, 'action')), true);
+
+    //             $th1 = $row->nama_role;
+    //             $th2 = implode(", ", $action);
+    //             $data[] = gathered_data(array($th1, $th2));
+    //         }
+    //     }
+
+    //     $dt = $data;
+    //     echo json_encode($dt);
+    //     die;
+    // }
+
     public function pagination()
     {
-        $dt    = $this->role_model->getAllRole();
+        $dt = $this->role_model->datatables();
+        $data = array();
         $start = $this->input->post('start');
-        $data  = array();
-        foreach ($dt['data'] as $row) {
+        foreach ($dt as $row) {
             $id       = encrypt($row->role_id);
             $li_btn   = array();
 
             if (userHasPermissions('role-show')) {
                 $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
             }
-
             if (userHasPermissions('role-update')) {
                 $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
             }
@@ -171,17 +201,23 @@ class Role extends Auth_Controller
                 $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
             }
 
-            $permission = $this->role_model->getPermissionByRole($row->role_id);
-            $action = json_decode(json_encode(array_column($permission, 'action')), true);
+            // $permission = $this->role_model->getPermissionByRole($row->role_id);
+            // $action = json_decode(json_encode(array_column($permission, 'action')), true);
 
             $th1 = ++$start . '.';
             $th2 = $row->nama_role;
-            $th3 = implode(", ", $action);
-            $th4 = generateBtnAction($li_btn);
-            $data[] = gathered_data(array($th1, $th2, $th3, $th4));
+            $th3 = generateBtnAction($li_btn);
+
+            $data[] = gathered_data(array($th1, $th2, $th3));
         }
-        $dt['data'] = $data;
-        echo json_encode($dt);
+
+        $output = array(
+            "draw"                  =>     intval($_POST["draw"]),
+            "recordsTotal"          =>     $this->role_model->getAll(),
+            "recordsFiltered"       =>     $this->role_model->getFiltered(),
+            "data"                  =>     $data
+        );
+        echo json_encode($output);
         die;
     }
 }
