@@ -34,7 +34,7 @@ class User_model extends CI_Model
         $this->db->from('users');
         $this->db->where(array('email' => $email));
 
-        return $this->db->get()->result();
+        return $this->db->get();
     }
 
     function getById($id)

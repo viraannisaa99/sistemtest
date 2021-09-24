@@ -46,23 +46,6 @@ class Role_model extends CI_Model
             ->generate();
     }
 
-    // function getPermissionByRole($role_id)
-    // {
-    //     $this->db->select('p.action');
-    //     $this->db->from('permission p');
-    //     $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id');
-    //     $this->db->where('rp.role_id', $role_id);
-
-    //     return $this->db->get()->result();
-    // }
-    // function getPermissionAction($id)
-    // {
-    //     return $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id')
-    //         ->join('role rl', 'rl.role_id = rp.role_id')
-    //         ->get_where('permission p', array('rp.role_id' => $id))
-    //         ->result();
-    // }
-
     function getRoleByUser($id)
     {
         $this->db->select('rl.nama_role');
