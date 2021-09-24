@@ -31,6 +31,10 @@ class Log_model extends CI_Model
         $this->db->order_by('lg.tgl', 'desc');
         $this->db->limit($limit, $start);
 
+        $this->load->helper('permission');
+        if (!userIsAdmin()) {
+            $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        }
         return $this->db->get()->result();
     }
 
