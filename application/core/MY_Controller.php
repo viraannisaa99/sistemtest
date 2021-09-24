@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Auth_Controller extends CI_Controller
+class Middleware extends CI_Controller
 {
     function __construct()
     {
@@ -9,5 +9,9 @@ class Auth_Controller extends CI_Controller
         if (!$this->session->userdata('logged_in')) {
             redirect('login');
         }
+
+        // $uri = explode("/", $_SERVER['REQUEST_URI']);
+        // echo $uri[2];
+        // die;
     }
 }

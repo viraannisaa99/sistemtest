@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class User extends Auth_Controller
+class User extends Middleware
 {
     function __construct()
     {
@@ -114,12 +114,21 @@ class User extends Auth_Controller
 
     public function edit($param2 = '')
     {
+        $data = array();
+
         $id = decrypt($param2);
         $dt = $this->user_model->getById($id);
         foreach ($dt as $row) {
-            $row->user_id = encrypt($row->user_id);
+            $user_id    = encrypt($row->user_id);
+            $role_id[]  = $row->role_id;
+            $nama        = $row->nama;
+            $email       = $row->email;
+            $username    = $row->username;
+            $nama_role[] = $row->nama_role;
         }
-        echo json_encode($dt);
+
+        $data[] = array("user_id" => $user_id, "role_id" => $role_id, "nama" => $nama, "email" => $email, "username" => $username, "nama_role" => $nama_role);
+        echo json_encode($data);
         die;
     }
 
@@ -128,16 +137,9 @@ class User extends Auth_Controller
     //     $id = decrypt($param2);
     //     $dt = $this->user_model->getById($id);
     //     foreach ($dt as $row) {
-    //         $user_id     = encrypt($row->user_id);
-    //         $role_id     = $row->role_id;
-    //         $nama        = $row->nama;
-    //         $email       = $row->email;
-    //         $username    = $row->username;
-    //         $nama_role[] = $row->nama_role;
+    //         $row->user_id = encrypt($row->user_id);
     //     }
-
-    //     $data[] = array("user_id" => $user_id, "role_id" => $role_id, "nama" => $nama, "email" => $email, "username" => $username, "nama_role" => $nama_role);
-    //     echo json_encode($data);
+    //     echo json_encode($dt);
     //     die;
     // }
 
@@ -158,18 +160,20 @@ class User extends Auth_Controller
 
                 $role_id = $this->input->post('role_id');
 
-                $user_role = array();
-                foreach ($role_id as $key => $val) {
-                    $user_role[] = array(
-                        'user_id' => $user_id,
-                        'role_id' => $role_id[$key],
-                    );
-                }
+                if (is_array($role_id) || is_object($role_id)) {
+                    $user_role = array();
+                    foreach ($role_id as $key => $val) {
+                        $user_role[] = array(
+                            'user_id' => $user_id,
+                            'role_id' => $role_id[$key],
+                        );
+                    }
 
-                if (is_array($role_id)) {
-                    $this->user_role_model->insert_batch($user_role);
-                } else {
-                    $this->user_role_model->insert($user_role);
+                    if (is_array($role_id)) {
+                        $this->user_role_model->insert_batch($user_role);
+                    } else {
+                        $this->user_role_model->insert($user_role);
+                    }
                 }
             } else {
                 $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
@@ -215,60 +219,12 @@ class User extends Auth_Controller
         die;
     }
 
-    // public function pagination()
-    // {
-    //     $dt    = $this->user_model->getAllUser();
-    //     $start = $this->input->post('start');
-    //     $data  = array();
-    //     foreach ($dt['data'] as $row) {
-    //         $id       = encrypt($row->user_id);
-    //         $li_btn   = array();
-
-    //         if (userHasPermissions('user-show')) {
-    //             $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
-    //         }
-    //         if (userHasPermissions('user-update')) {
-    //             if ($this->session->userdata('user_id') == ($row->user_id) || userIsAdmin()) {
-    //                 $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
-    //             }
-    //         }
-    //         if (userHasPermissions('user-delete')) {
-    //             $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
-    //         }
-
-    //         $role = $this->role_model->getRoleByUser($row->user_id);
-    //         $nama_role = json_decode(json_encode(array_column($role, 'nama_role')), true);
-
-    //         $th1 = ++$start . '.';
-    //         $th2 = $row->nama;
-    //         $th3 = $row->email;
-    //         $th4 = $row->username;
-    //         $th5    = implode(", ", $nama_role);
-    //         $th6    = generateBtnAction($li_btn);
-    //         $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5, $th6));
-    //     }
-    //     $dt['data'] = $data;
-    //     echo json_encode($dt);
-    //     die;
-    // }
-
-    public function profile()
-    {
-        if (!$this->session->userdata('logged_in')) {
-            redirect('/user/profile');
-        }
-
-        $data['userData'] = $this->session->userdata('userData');
-
-        $this->load->view('profile', $data);
-    }
-
     public function pagination()
     {
-        $dt    = $this->user_model->datatables();
+        $dt    = $this->user_model->getAllUser();
         $start = $this->input->post('start');
         $data  = array();
-        foreach ($dt as $row) {
+        foreach ($dt['data'] as $row) {
             $id       = encrypt($row->user_id);
             $li_btn   = array();
 
@@ -295,14 +251,62 @@ class User extends Auth_Controller
             $th6    = generateBtnAction($li_btn);
             $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5, $th6));
         }
-
-        $output = array(
-            "draw"                  =>  intval($this->input->post("draw")),
-            "recordsTotal"          =>  $this->user_model->getAll(),
-            "recordsFiltered"       =>  $this->user_model->getFiltered(),
-            "data"                  =>  $data
-        );
-        echo json_encode($output);
+        $dt['data'] = $data;
+        echo json_encode($dt);
         die;
     }
+
+    public function profile()
+    {
+        if (!$this->session->userdata('logged_in')) {
+            redirect('/user/profile');
+        }
+
+        $data['userData'] = $this->session->userdata('userData');
+
+        $this->load->view('profile', $data);
+    }
+
+    // public function pagination()
+    // {
+    //     $dt    = $this->user_model->datatables();
+    //     $start = $this->input->post('start');
+    //     $data  = array();
+    //     foreach ($dt as $row) {
+    //         $id       = encrypt($row->user_id);
+    //         $li_btn   = array();
+
+    //         if (userHasPermissions('user-show')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
+    //         }
+    //         if (userHasPermissions('user-update')) {
+    //             if ($this->session->userdata('user_id') == ($row->user_id) || userIsAdmin()) {
+    //                 $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
+    //             }
+    //         }
+    //         if (userHasPermissions('user-delete')) {
+    //             $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
+    //         }
+
+    //         $role = $this->role_model->getRoleByUser($row->user_id);
+    //         $nama_role = json_decode(json_encode(array_column($role, 'nama_role')), true);
+
+    //         $th1    = ++$start . '.';
+    //         $th2    = $row->nama;
+    //         $th3    = $row->email;
+    //         $th4    = $row->username;
+    //         $th5    = implode(", ", $nama_role);
+    //         $th6    = generateBtnAction($li_btn);
+    //         $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5, $th6));
+    //     }
+
+    //     $datatable = array(
+    //         "draw"                  =>  intval($this->input->post("draw")),
+    //         "recordsTotal"          =>  $this->user_model->getAll(),
+    //         "recordsFiltered"       =>  $this->user_model->getFiltered(),
+    //         "data"                  =>  $data
+    //     );
+    //     echo json_encode($datatable);
+    //     die;
+    // }
 }

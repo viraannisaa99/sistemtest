@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Log extends CI_Controller
+class Log extends Middleware
 {
     function __construct()
     {

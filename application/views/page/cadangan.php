@@ -31,3 +31,12 @@
         </div>
     </div>
 </div>
+
+<?php foreach ($roles as $row) : ?>
+<div class="form-check-inline">
+    <label class="form-check-label">
+        <input type="checkbox" name="role_id[]" id="role_id[]"
+            value="<?php echo $row->role_id; ?>"><?php echo $row->role_name; ?>
+    </label>
+</div>
+<?php endforeach; ?>

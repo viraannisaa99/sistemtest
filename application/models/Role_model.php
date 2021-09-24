@@ -46,22 +46,22 @@ class Role_model extends CI_Model
             ->generate();
     }
 
-    function getPermissionByRole($role_id)
-    {
-        $this->db->select('p.action');
-        $this->db->from('permission p');
-        $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id');
-        $this->db->where('rp.role_id', $role_id);
+    // function getPermissionByRole($role_id)
+    // {
+    //     $this->db->select('p.action');
+    //     $this->db->from('permission p');
+    //     $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id');
+    //     $this->db->where('rp.role_id', $role_id);
 
-        return $this->db->get()->result();
-    }
-    function getPermissionAction($id)
-    {
-        return $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id')
-            ->join('role rl', 'rl.role_id = rp.role_id')
-            ->get_where('permission p', array('rp.role_id' => $id))
-            ->result();
-    }
+    //     return $this->db->get()->result();
+    // }
+    // function getPermissionAction($id)
+    // {
+    //     return $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id')
+    //         ->join('role rl', 'rl.role_id = rp.role_id')
+    //         ->get_where('permission p', array('rp.role_id' => $id))
+    //         ->result();
+    // }
 
     function getRoleByUser($id)
     {
@@ -74,48 +74,14 @@ class Role_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    var $order_column = array(null, "nama_role", null, null);
-
-    function getSearch()
+    function getPermissionById($role_id)
     {
-        $this->db->select("role_id, nama_role");
-        $this->db->from("role");
+        $this->db->select('p.action, rp.role_id, p.permission_id, rl.nama_role');
+        $this->db->from('permission p');
+        $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id');
+        $this->db->join('role rl', 'rl.role_id = rp.role_id');
+        $this->db->where_in('rp.role_id', $role_id);
 
-        $post = $this->input->post();
-
-        if (isset($post["search"]["value"])) {
-            $this->db->like("nama_role", $post["search"]["value"]);
-        }
-        if (isset($post["order"])) {
-            $this->db->order_by($this->order_column[$post['order']['0']['column']], $post['order']['0']['dir']);
-        } else {
-            $this->db->order_by("role_id");
-        }
-    }
-
-    function datatables()
-    {
-        $this->getSearch();
-        $post = $this->input->post();
-
-        if ($post["length"] != -1) {
-            $this->db->limit($post['length'], $post['start']);
-        }
-        $query = $this->db->get();
-        return $query->result();
-    }
-
-    function getFiltered()
-    {
-        $this->getSearch();
-        $query = $this->db->get();
-        return $query->num_rows();
-    }
-
-    function getAll()
-    {
-        $this->db->select("*");
-        $this->db->from("role");
-        return $this->db->count_all_results();
+        return $this->db->get()->result();
     }
 }

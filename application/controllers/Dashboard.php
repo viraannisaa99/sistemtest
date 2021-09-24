@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Dashboard extends Auth_Controller
+class Dashboard extends Middleware
 {
     function __construct()
     {

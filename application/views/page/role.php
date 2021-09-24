@@ -90,6 +90,9 @@ function edit_function(task, id) {
                     for (var i = 0; i < resp.length; i++) {
                         id_edit = resp[i]['role_id'];
                         $("#editModalForm input[name=nama_role]").val(resp[i]['nama_role']);
+                        $('#editModalForm input[name=permission_id]').prop('checked', true).val(resp[i][
+                            'permission_id'
+                        ]);
                     }
                     $('#editModalForm div[class=form-line]').addClass('focused');
                 }
@@ -234,9 +237,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                                 <?php foreach ($permission as $row) : ?>
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="permission[]"
-                                            id="action[]"
-                                            value="<?php echo $row->permission_id; ?>"><?php echo $row->action; ?>
+                                        <input type="checkbox" class="modal_check_box" name="permission_id[]"
+                                            id="permission_id[]" value="<?php echo $row->permission_id; ?>"
+                                            <?php if (($row->permission_id) == $row->permission_id) echo "checked='checked'"; ?>><?php echo $row->action ?>
                                     </label>
                                 </div>
                                 <?php endforeach; ?>

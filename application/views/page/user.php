@@ -12,7 +12,7 @@ function reset_form() {
 function show_form() {
     $("#showModalForm")[0].reset();
     $('.form-line').removeClass('focused');
-    $('#showModalForm select[name=nama_role] option[value=""]').prop("checked", true).trigger('change');
+
 }
 
 function updateAllTable() {
@@ -79,6 +79,7 @@ function show_function(id) {
     });
 }
 
+
 function edit_function(task, id) {
     if (task == 'show') {
         reset_form();
@@ -93,9 +94,18 @@ function edit_function(task, id) {
                         id_edit = resp[i]['user_id'];
                         $("#editModalForm input[name=nama]").val(resp[i]['nama']);
                         $("#editModalForm input[name=email]").val(resp[i]['email']);
-                        $('#editModalForm select[name=nama_role] option[value="' + resp[i]['nama_role'] +
-                            '"]').prop("selected", true).trigger('change');
                         $("#editModalForm input[name=username]").val(resp[i]['username']);
+                        $('#editModalForm input[name=role_id]').prop('checked', true).val(resp[i][
+                            'role_id'
+                        ]).trigger('change');
+
+                        // for (var r = 0; r < resp[i]['role_id'].length; r++) {
+                        //     var role = resp[i]['role_id'][r];
+                        //     $('#editModalForm input[name=role_id_' + role + ' ').prop('checked', true).val(
+                        //         resp[i][
+                        //             'role_id'
+                        //         ][r]).trigger('change');
+                        // }
                     }
                     $('#editModalForm div[class=form-line]').addClass('focused');
                 }
@@ -145,7 +155,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     table = $('#table').DataTable({
         "processing": true,
         "serverSide": true,
-        "order": [],
+        "responsive": true,
+        "order": [
+            [0, "desc"]
+        ],
+        "lengthMenu": [
+            [15, 25, 50, -1],
+            [15, 25, 50, "All"]
+        ],
         "ajax": {
             "url": "<?php echo site_url('user/pagination') ?>",
             "type": "POST"
@@ -153,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         "columnDefs": [{
             "targets": [0],
             "className": "center",
-            "orderable": false,
+            "searching": true
         }],
     });
 });
@@ -229,8 +246,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                                             foreach ($nama_role as $row) : ?>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="form-check-input" name="role_id[]"
-                                                    id="role_id[]"
+                                                <input type="checkbox" name="role_id[]" id="role_id[]"
                                                     value="<?php echo $row->role_id; ?>"><?php echo $row->nama_role; ?>
                                             </label>
                                         </div>
@@ -325,11 +341,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
                                         foreach ($nama_role as $row) : ?>
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="role_id[]" id="role_id[]"
-                                            value="<?php echo $row->role_id; ?>"><?php echo $row->nama_role; ?>
+                                        <input type="checkbox" name="role_id[]" id="role_id"
+                                            value="<?php echo $row->role_id; ?>"
+                                            <?php if (($row->role_id) == $row->role_id) echo "checked='checked'"; ?>>
+                                        <?php echo $row->nama_role; ?>
                                     </label>
                                 </div>
-
                                 <?php endforeach;
                                     } ?>
                             </div>

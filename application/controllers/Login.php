@@ -86,15 +86,17 @@ class Login extends CI_Controller
         $user_id = $this->session->userdata('user_id');
         $cek_role  = $this->user_model->getById($user_id);
 
-        $action = json_decode(json_encode(array_column($cek_role, 'role_id')), true);
-        $this->session->set_userdata('role_id', $action);
+        foreach ($cek_role as $row) {
+            $role_id[] = $row->role_id;
+        }
+        $this->session->set_userdata('role_id', $role_id);
 
         // cek permission
-        $role_id = $this->session->userdata('role_id');
         $cek_permission = $this->permission_model->getPermissionByRole($role_id);
 
-        $action = json_decode(json_encode(array_column($cek_permission, 'action')), true);
-
+        foreach ($cek_permission as $row) {
+            $action[] = $row->action;
+        }
         $this->session->set_userdata('permissions', $action);
     }
 
