@@ -6,13 +6,11 @@ var id_show;
 function reset_form() {
     $("#editModalForm")[0].reset();
     $('.form-line').removeClass('focused');
-    $('#editModalForm select[name=action] option[value=""]').prop("selected", true).trigger('change');
 }
 
 function show_form() {
     $("#showModalForm")[0].reset();
     $('.form-line').removeClass('focused');
-    $('#showModalForm select[name=action] option[value=""]').prop("checked", true).trigger('change');
 }
 
 function updateAllTable() {
@@ -86,18 +84,19 @@ function edit_function(task, id) {
             url: '<?php echo base_url() . 'role/edit/' ?>' + id,
             dataType: 'json',
             success: function(resp) {
-                if (resp.length > 0) {
+                if (resp) {
                     for (var i = 0; i < resp.length; i++) {
-                        id_edit = resp[i]['role_id'];
-                        $("#editModalForm input[name=nama_role]").val(resp[i]['nama_role']);
-                        $('#editModalForm input[name=permission_id]').prop('checked', true).val(resp[i][
-                            'permission_id'
-                        ]);
+                        id_edit = resp[i].role_id;
+                        $("#editModalForm input[name=nama_role]").val(resp[i].nama_role);
+                        for (var r = 0; r < resp[i].permission_id.length; r++) {
+                            $(`#editModalForm input[name="permission_id[]"][value="${resp[i].permission_id[r]}"]`)
+                                .prop('checked', true);
+                        }
                     }
-                    $('#editModalForm div[class=form-line]').addClass('focused');
                 }
             }
         });
+
     } else if (task == 'save') {
         $.ajax({
             method: 'POST',
@@ -233,18 +232,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
                                 </div>
                             </div>
                             <div class="form-group form-float">
-                                <p><b></strong> Pilih Role Permission </b></p>
-                                <?php foreach ($permission as $row) : ?>
+                                <?php
+                                if (is_array($permission)) {
+                                    foreach ($permission as $row) : ?>
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="modal_check_box" name="permission_id[]"
-                                            id="permission_id[]" value="<?php echo $row->permission_id; ?>"
-                                            <?php if (($row->permission_id) == $row->permission_id) echo "checked='checked'"; ?>><?php echo $row->action ?>
+                                        <input type="checkbox" name="permission_id[]" id="permission_id[]"
+                                            value="<?= $row->permission_id ?>">
+                                        <?= $row->action ?>
                                     </label>
                                 </div>
-                                <?php endforeach; ?>
+                                <?php endforeach;
+                                } ?>
                             </div>
                         </div>
+
                         <?php echo form_close(); ?>
                         <div class="modal-footer">
                             <button type="button" class="btn bg-green waves-effect col-white"

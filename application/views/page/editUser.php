@@ -6,7 +6,7 @@ var id_show;
 function reset_form() {
     $("#editModalForm")[0].reset();
     $('.form-line').removeClass('focused');
-    // $('#editModalForm select[name=nama_role] option[value=""]').prop("checked", true).trigger('change');
+    $('#editModalForm select[name=nama_role] option[value=""]').prop("checked", true).trigger('change');
 }
 
 function show_form() {
@@ -19,67 +19,6 @@ function updateAllTable() {
     table.ajax.reload(null, false);
 }
 
-function add_function() {
-    $.ajax({
-        method: 'POST',
-        url: '<?php echo base_url() . 'user/add' ?>',
-        data: $('#add-form').serialize(),
-        dataType: 'json',
-        success: function(resp) {
-            if (resp['status'] == 'success') {
-                updateAllTable();
-                $("#add-form")[0].reset();
-            }
-            return swal({
-                timer: 1300,
-                showConfirmButton: true,
-                title: resp['msg'],
-                type: resp['status']
-            });
-        }
-    });
-}
-
-function delete_function(id) {
-    $.ajax({
-        method: 'POST',
-        url: '<?php echo base_url() . 'user/delete/' ?>' + id,
-        dataType: 'json',
-        success: function(resp) {
-            updateAllTable();
-            return swal({
-                timer: 1300,
-                showConfirmButton: false,
-                title: resp['msg'],
-                type: resp['status']
-            });
-        }
-    });
-}
-
-function show_function(id) {
-    show_form();
-    $('#showModal').modal();
-    $.ajax({
-        method: 'POST',
-        url: '<?php echo base_url() . 'user/show/' ?>' + id,
-        dataType: 'json',
-        success: function(resp) {
-            if (resp.length > 0) {
-                for (var i = 0; i < resp.length; i++) {
-                    id_show = resp[i]['user_id'];
-                    $('#nama').text(resp[i]['nama']);
-                    $("#email").text(resp[i]['email']);
-                    $("#username").text(resp[i]['username']);
-                    $("#nama_role").text(resp[i]['nama_role']);
-                }
-                $('#showModalForm div[class=form-line]').addClass('focused');
-            }
-        }
-    });
-}
-
-
 function edit_function(task, id) {
     if (task == 'show') {
         reset_form();
@@ -89,17 +28,17 @@ function edit_function(task, id) {
             url: '<?php echo base_url() . 'user/edit/' ?>' + id,
             dataType: 'json',
             success: function(resp) {
-                if (resp) {
-                    id_edit = resp.user_id;
-                    $("#editModalForm input[name=nama]").val(resp.nama);
-                    $("#editModalForm input[name=email]").val(resp.email);
-                    $("#editModalForm input[name=username]").val(resp.username);
-
-                    resp.role_id.forEach(val => {
-                        $(`#editModalForm input[name="role_id[]"][value="${val}"]`)
-                            .prop('checked', true);
-                    });
-
+                if (resp.length > 0) {
+                    for (var i = 0; i < resp.length; i++) {
+                        id_edit = resp[i]['user_id'];
+                        $("#editModalForm input[name=nama]").val(resp[i]['nama']);
+                        $("#editModalForm input[name=email]").val(resp[i]['email']);
+                        $("#editModalForm input[name=username]").val(resp[i]['username']);
+                        $('#editModalForm input[name=role_id]').prop('checked', true).val(resp[i][
+                            'role_id'
+                        ]).trigger('change');
+                    }
+                    $('#editModalForm div[class=form-line]').addClass('focused');
                 }
             }
         });
@@ -142,29 +81,6 @@ function edit_function(task, id) {
         });
     }
 }
-
-document.addEventListener("DOMContentLoaded", function(event) {
-    table = $('#table').DataTable({
-        "processing": true,
-        "serverSide": true,
-        "responsive": true,
-        "order": [
-            [0, "desc"]
-        ],
-        "lengthMenu": [
-            [15, 25, 50, -1],
-            [15, 25, 50, "All"]
-        ],
-        "ajax": {
-            "url": "<?php echo site_url('user/pagination') ?>",
-            "type": "POST"
-        },
-        "columnDefs": [{
-            "targets": [0],
-            "className": "center",
-        }],
-    });
-});
 </script>
 
 <div class="content">
@@ -252,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                                     data-target="#collapseExample" aria-expanded="false"
                                     aria-controls="collapseExample"><span>CANCEL</span></button>
                                 <button type="button" class="btn bg-green col-white waves-effect"
-                                    onclick="add_function()"><span>SUBMIT</span></button>
+                                    onclick="edit_function()"><span>SUBMIT</span></button>
                             </div>
                         </div>
                     </div>
@@ -260,30 +176,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             </div>
         </div>
         <div class="clearfix"></div><br>
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header card-header-primary">
-                    <h4 class="card-title ">Daftar User Sistem</h4>
-                    <p class="card-category"> List Daftar User Sistem</p>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover js-basic-example" id="table">
-                            <thead class="text-primary">
-                                <tr>
-                                    <th> # </th>
-                                    <th> Nama</th>
-                                    <th> Email </th>
-                                    <th> Username </th>
-                                    <th> Role </th>
-                                    <th> Aksi </th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Modal -->
         <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
@@ -332,8 +224,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
                                         <input type="checkbox" name="role_id[]" id="role_id"
-                                            value="<?= $row->role_id ?>">
-                                        <?= $row->nama_role ?>
+                                            value="<?php echo $row->role_id; ?>"
+                                            <?php if (($row->role_id) == $row->role_id) echo "checked='checked'"; ?>>
+                                        <?php echo $row->nama_role; ?>
                                     </label>
                                 </div>
                                 <?php endforeach;
@@ -341,63 +234,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
                             </div>
                         </div>
                         <?php } ?>
-                        <?= form_close() ?>
+                        <?php echo form_close(); ?>
                         <div class="modal-footer">
                             <button type="button" class="btn bg-green waves-effect col-white"
                                 onClick="edit_function('save')">SAVE CHANGES</button>
                             <button type="button" class="btn bg-grey waves-effect col-white"
                                 data-dismiss="modal">CLOSE</button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Show -->
-        <div class="modal fade" id="showModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">User Detail</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <?php echo form_open('user', array('id' => 'showModalForm', 'autocomplete' => "off")); ?>
-                        <table class="table">
-                            <tr>
-                                <th>Nama</th>
-                                <td>:</td>
-                                <td>
-                                    <div id="nama"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Email</th>
-                                <td>:</td>
-                                <td>
-                                    <div id="email"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Username</th>
-                                <td>:</td>
-                                <td>
-                                    <div id="username"></div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <th>Role</th>
-                                <td>:</td>
-                                <td>
-                                    <div id="nama_role"></div>
-                                </td>
-                            </tr>
-                        </table>
-                        <?php echo form_close(); ?>
                     </div>
                 </div>
             </div>

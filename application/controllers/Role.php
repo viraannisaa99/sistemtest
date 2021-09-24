@@ -100,12 +100,12 @@ class Role extends Middleware
         $data = array();
 
         $id = decrypt($param2);
-        $dt = $this->role_model->getPermissionById($id);
+        $dt = $this->role_model->getById($id);
         foreach ($dt as $row) {
-            $role_id = encrypt($row->role_id);
-            $nama_role = $row->nama_role;
+            $role_id         = encrypt($row->role_id);
+            $nama_role       = $row->nama_role;
             $permission_id[] = $row->permission_id;
-            $action[] = $row->action;
+            $action[]        = $row->action;
         }
 
         $data[] = array("role_id" => $role_id, "nama_role" => $nama_role, "permission_id" => $permission_id, "action" => $action);
