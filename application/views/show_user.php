@@ -12,7 +12,6 @@
                         id_show = resp[i]['user_id'];
                         $('#nama').text(resp[i]['nama']);
                         $("#email").text(resp[i]['email']);
-                        $('#level').text(resp[i]['level']).prop("selected", true);
                         $("#username").text(resp[i]['username']);
                     }
                 }
@@ -21,13 +20,9 @@
     }
 </script>
 
-<?php include "template/header.php"; ?>
-
 <body class="">
     <div class="wrapper ">
-        <?php include "template/include_sidebar.php"; ?>
         <div class="main-panel">
-            <?php include "template/include_navbar.php"; ?>
             <div class="content">
                 <div class="clearfix">
                     <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
@@ -53,19 +48,10 @@
                                     <span id="username" name="username"></span>
                                 </td>
                             </tr>
-                            <tr>
-                                <th>Level</th>
-                                <td>:</td>
-                                <td>
-                                    <span id="level" name="level"></span>
-                                </td>
-                            </tr>
                         </table>
                     </div>
                 </div>
             </div>
-            <?php include "template/footer.php"; ?>
         </div>
     </div>
-    <?php include "template/include_js.php"; ?>
 </body>

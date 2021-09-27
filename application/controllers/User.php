@@ -12,6 +12,7 @@ class User extends Middleware
         $this->load->model('log_model');
         $this->load->model('user_role_model');
         $this->load->model('permission_model');
+        $this->load->model('notif_model');
 
         $this->load->helper('permission');
         $this->load->helper('format');
@@ -38,7 +39,7 @@ class User extends Middleware
         print_r($this->session->userdata('role_id'));
         print_r($this->session->userdata('permissions'));
         print_r($this->session->userdata('user_id'));
-        print_r($this->session->userdata('userData'));
+        // print_r($this->session->userdata('userData'));
     }
 
     public function add()
@@ -164,6 +165,13 @@ class User extends Middleware
                         $this->user_role_model->insert($user_role);
                     }
                 }
+
+                $notif['judul']     = "Memperbaharui Role User";
+                $notif['tipe']      = "Role User diperbaharui";
+                $notif['baca']      = 0;
+                $notif['user_id']   = $user_id;
+
+                $this->notif_model->add($notif);
             } else {
                 $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
             }
@@ -193,12 +201,12 @@ class User extends Middleware
         die;
     }
 
-    public function reset($param2 = '')
+    public function reset()
     {
         if ($this->input->post('password') != $this->input->post('confirm_password')) {
             echo json_encode(array('status' => 'error', 'msg' => 'Confirm Password salah !'));
         } else {
-            $user_id          = decrypt($param2);
+            $user_id          = $this->session->userdata('user_id');
             $temp             = $this->user_model->getById($user_id);
             $data['password'] = hash('sha512', $this->input->post('password'));
             $this->user_model->update($user_id, $data);
@@ -245,21 +253,41 @@ class User extends Middleware
         die;
     }
 
-    public function profile()
+    public function userProfile()
     {
         if (!$this->session->userdata('logged_in')) {
-            redirect('/user/profile');
+            redirect('/user/userProfile');
         }
 
         $data['userData'] = $this->session->userdata('userData');
 
-
-        $this->load->view('profile', $data);
+        $this->load->view('userProfile', $data);
     }
 
-    public function editProfile()
+    public function totalNotif()
     {
-        $data['userData'] = $this->session->userdata('userData');
-        $this->load->view('page/editUser', $data);
+        $total = $this->notif_model->total_rows();
+        $result['total'] = $total;
+        $result['msg'] = "Berhasil direfresh secara realtime";
+        echo json_encode($result);
+    }
+
+    public function listNotif()
+    {
+        $data = array();
+        $list = $this->notif_model->select();
+
+        foreach ($list as $row) {
+            $judul[] = $row->judul;
+        }
+
+        $data = array("judul" => $judul);
+
+        echo json_encode($data);
+    }
+
+    public function isRead()
+    {
+        $this->db->query("UPDATE notif SET baca = 1 WHERE baca=0");
     }
 }

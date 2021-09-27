@@ -48,7 +48,7 @@ class Role_model extends CI_Model
 
     function getRoleByUser($id)
     {
-        $this->db->select('rl.nama_role');
+        $this->db->select('pg.*, rl.*');
         $this->db->from('users pg');
         $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
         $this->db->join('role rl', 'rl.role_id = ur.role_id');

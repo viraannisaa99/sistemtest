@@ -22,20 +22,17 @@
                         </p>
                     </a>
                 </li>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="material-icons">notifications</i>
-                        <span class="notification">5</span>
+                        <span class="notification" id="total-notif"></span>
                         <p class="d-lg-none d-md-block">
                             Some Actions
                         </p>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">Mike John responded to your email</a>
-                        <a class="dropdown-item" href="#">You have 5 new tasks</a>
-                        <a class="dropdown-item" href="#">You're now friend with Andrew</a>
-                        <a class="dropdown-item" href="#">Another Notification</a>
-                        <a class="dropdown-item" href="#">Another One</a>
+                        <a class="dropdown-item" href="#" id="judul" name="judul"></a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -46,14 +43,103 @@
                         </p>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                        <a class="dropdown-item" href="#">Profile</a>
-                        <a class="dropdown-item" href="#">Settings</a>
+                        <a class="dropdown-item" href="<?php echo base_url() . 'profile' ?>">Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Log out</a>
+                        <a class="dropdown-item" href="<?php echo base_url() . 'login/logout' ?>">Log out</a>
                     </div>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
+
+<script src="<?php echo base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    // $(document).ready(function() {
+    //     setInterval(function() {
+    //         $.ajax({
+    //             url: "<?= base_url() ?>user/totalNotif",
+    //             type: "POST",
+    //             dataType: "json",
+    //             data: {},
+    //             success: function(data) {
+    //                 $("#total-notif").html(data.total);
+    //             }
+    //         });
+    //     }, 2000);
+    // })
+
+    // $(document).ready(function() {
+    //     setInterval(function() {
+    //         $.ajax({
+    //             url: "<?= base_url() ?>user/listNotif",
+    //             type: "POST",
+    //             dataType: "json",
+    //             success: function(resp) {
+    //                 if (resp) {
+    //                     $('#judul').html(resp.judul);
+    //                 }
+    //             }
+    //         });
+    //     }, 2000);
+    // })
+
+    $(document).ready(function() {
+
+        $.ajax({
+            url: "<?= base_url() ?>user/totalNotif",
+            type: "POST",
+            dataType: "json",
+            data: {},
+            success: function(data) {
+                $("#total-notif").html(data.total);
+            }
+        });
+
+    })
+
+    $(document).ready(function() {
+
+        $.ajax({
+            url: "<?= base_url() ?>user/listNotif",
+            type: "POST",
+            dataType: "json",
+            success: function(resp) {
+                if (resp) {
+                    $('#judul').html(resp.judul);
+                }
+            }
+        });
+
+    })
+
+    // $(document).ready(function() {
+    //     $.ajax({
+    //         url: "<?= base_url() ?>user/listNotif",
+    //         type: "POST",
+    //         dataType: "json",
+    //         success: function(resp) {
+    //             $.each(resp.judul, function() {
+    //                 $("#judul").append(`<a id="judul" class="dropdown-item" href="#">&nbsp;` + resp.judul + `</a>`);
+    //             });
+    //         }
+    //     });
+
+    // })
+
+    $(document).on('click', '.dropdown-menu', function() {
+        $.ajax({
+            url: "<?= base_url() ?>user/isRead",
+            type: "POST",
+            dataType: "json",
+            data: {},
+            success: function(data) {
+                $('#total-notif').html('');
+            }
+        });
+        $('#total-notif').html('');
+    });
+</script>
+
+
 <!-- End Navbar -->

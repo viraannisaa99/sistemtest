@@ -20,6 +20,13 @@
                 </a>
             </li>
 
+            <!-- <li class="<?php echo  $page_name == 'profile' ? 'active' : '' ?>">
+                <a class="nav-link" href="<?php echo base_url() . 'profile' ?>">
+                    <i class="material-icons">person</i>
+                    <p>Profile</p>
+                </a>
+            </li> -->
+
             <li class="<?php echo  $page_name == 'role' ? 'active' : '' ?>">
                 <a class="nav-link" href="<?php echo base_url() . 'role' ?>">
                     <i class="material-icons">person</i>
@@ -33,12 +40,12 @@
                     <p>Log System</p>
                 </a>
             </li>
-            <li class="nav-item ">
+            <!-- <li class="nav-item ">
                 <a class="nav-link" href="<?php echo base_url() . 'login/logout' ?>">
                     <i class="material-icons">logout</i>
                     <p>Logout</p>
                 </a>
-            </li>
+            </li> -->
         </ul>
     </div>
 </div>

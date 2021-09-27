@@ -19,4 +19,19 @@ class User_role_model extends CI_Model
     {
         return $this->db->delete('user_role', array('user_id' => $user_id));
     }
+
+    function select()
+    {
+        return $this->db->select('*')->from('user_role')->result();
+    }
+
+    function getUserByRole($id)
+    {
+        $this->db->select('ur.user_id');
+        $this->db->from('role rl');
+        $this->db->join('user_role ur', 'ur.role_id = rl.role_id');
+        $this->db->where('ur.role_id', $id);
+
+        return $this->db->get()->result();
+    }
 }

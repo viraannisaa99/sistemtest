@@ -7,8 +7,11 @@ class Role extends Middleware
     {
         parent::__construct();
 
+        $this->load->model('user_model');
         $this->load->model('role_model');
         $this->load->model('log_model');
+        $this->load->model('notif_model');
+        $this->load->model('user_role_model');
         $this->load->model('role_permission_model');
         $this->load->model('permission_model');
 
@@ -140,6 +143,32 @@ class Role extends Middleware
                 } else {
                     $this->role_permission_model->insert($role_permission);
                 }
+
+                $select = $this->user_role_model->getUserByRole($role_id);
+
+                // print_r($select);
+
+                $notif['judul']     = "Memperbaharui Role Permission";
+                $notif['tipe']      = "Role Permission diperbaharui";
+                $notif['baca']      = 0;
+
+                $roles = array();
+                foreach ($select as $key) {
+                    $roles[] = array(
+                        'judul'   => "Memperbaharui Role Permission",
+                        'tipe'    => "Role Permission diperbaharui",
+                        'baca'    => 0,
+                        'user_id' => $key->user_id,
+                    );
+                }
+
+                $this->notif_model->insert_batch($roles);
+
+                // if (is_array($roles)) {
+                //     $this->notif_model->insert_batch(json_encode($roles));
+                // } else {
+                //     $this->notif_model->add($roles);
+                // }
             }
             $this->log_model->addLog(userLog('Memperbaharui Role', 'Memperbaharui data role ' . $data['nama_role']));
             echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil diperbaharui'));

@@ -46,79 +46,40 @@ class Login extends CI_Controller
         }
     }
 
-    // public function googleOauth()
-    // {
-    //     if ($this->session->userdata('logged_in') == true) {
-    //         redirect('user/profile/'); // redirect ke profile jika sudah login
-    //     }
-
-    //     if (isset($_GET['code'])) {
-    //         $this->google->setAccessToken(); // authenticate user with google
-    //         $gpInfo = $this->google->getUserInfo(); // Get user info from google
-
-    //         /* data untuk di insert ke database */
-    //         $userData['oauth_provider']     = 'google';
-    //         $userData['oauth_uid']          = $gpInfo['id'];
-    //         $userData['email']              = $gpInfo['email'];
-    //         $userData['locale']             = !empty($gpInfo['locale']) ? $gpInfo['locale'] : '';
-    //         $userData['picture']            = !empty($gpInfo['picture']) ? $gpInfo['picture'] : '';
-
-    //         $cek = $this->user_model->getUserByEmail($userData['email']);
-
-    //         if ($cek) {
-    //             $this->login_model->checkUser($userData); // update user data ke database
-
-
-    //             $this->session->set_userdata('user_id', $cek[0]->user_id);
-    //             $this->session->set_userdata('logged_in', true);
-    //             $this->session->set_userdata('userData', $userData);
-
-    //             $this->role();
-
-    //             redirect('user/profile/');
-    //         } else {
-    //             $this->session->set_flashdata('error', 'Anda Bukan User di Sistem Ini');
-    //             redirect(base_url() . 'login');
-    //         }
-    //     }
-    // }
-
     public function googleOauth()
     {
         if ($this->session->userdata('logged_in') == true) {
-            redirect('user/profile/'); // redirect ke profile jika sudah login
+            redirect('user/userProfile/');
         }
 
         if (isset($_GET['code'])) {
-            $this->google->setAccessToken(); // authenticate user with google
-            $gpInfo = $this->google->getUserInfo(); // Get user info from google
+            $this->google->setAccessToken();
+            $gpInfo = $this->google->getUserInfo();
 
-            /* data untuk di insert ke database */
-            $userData['oauth_provider']     = 'google';
-            $userData['oauth_uid']          = $gpInfo['id'];
             $userData['email']              = $gpInfo['email'];
-            $userData['locale']             = !empty($gpInfo['locale']) ? $gpInfo['locale'] : '';
             $userData['picture']            = !empty($gpInfo['picture']) ? $gpInfo['picture'] : '';
 
             $cek = $this->user_model->getUserByEmail($userData['email']);
 
             if ($cek->result()) {
-                $cek_email = $cek->num_rows(); // update user data ke database
+                $cek_email = $cek->num_rows();
                 if ($cek_email > 0) {
                     $result = $cek->row_array();
                     $data['modified'] = date("Y-m-d H:i:s");
+                    $data['picture']  = $userData['picture'];
 
                     $this->login_model->update($data, array('user_id' => $result['user_id']));
                     $userID = $result['user_id'];
                 }
 
                 $this->session->set_userdata('user_id', $cek->result()[0]->user_id);
+                $this->session->set_userdata('nama', $cek->result()[0]->nama);
                 $this->session->set_userdata('logged_in', true);
                 $this->session->set_userdata('userData', $userData);
 
                 $this->role();
 
-                redirect('user/profile/');
+                redirect('user/userProfile/');
 
                 return $userID ? $userID : false;
             } else {
@@ -135,8 +96,11 @@ class Login extends CI_Controller
 
         foreach ($cek_role as $row) {
             $role_id[] = $row->role_id;
+            $nama_role[] = $row->nama_role;
         }
+
         $this->session->set_userdata('role_id', $role_id);
+        $this->session->set_userdata('nama_role', $nama_role);
 
         // cek permission
         $cek_permission = $this->permission_model->getPermissionByRole($role_id);

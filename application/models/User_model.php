@@ -80,4 +80,20 @@ class User_model extends CI_Model
             ->where('pg.status = 1')
             ->generate();
     }
+
+    function getProfile()
+    {
+        $this->db->select('pg.*');
+        $this->db->from('users pg');
+        $this->db->where(array('pg.user_id' => $this->session->userdata('user_id')));
+
+        return $this->db->get();
+    }
+
+    function updateProfile($data)
+    {
+        $this->db->where('user_id', $this->session->userdata('user_id'));
+        $this->db->update('users', $data);
+        return $this->db->affected_rows() > 0 ? TRUE : FALSE;
+    }
 }
