@@ -21,6 +21,8 @@ class Notif_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('notif');
+        $this->db->where('user_id', $this->session->userdata('user_id'));
+        $this->db->where('baca', 0);
         $this->db->order_by('notif_id', 'desc');
         $this->db->limit(5);
 
@@ -39,5 +41,15 @@ class Notif_model extends CI_Model
     function insert_batch($result)
     {
         $this->db->insert_batch('notif', $result);
+    }
+
+    function getNotif($limit, $start)
+    {
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
+        $this->db->from('notif lg');
+        $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        $this->db->order_by('lg.tanggal', 'desc');
+        $this->db->limit($limit, $start);
+        return $this->db->get()->result();
     }
 }

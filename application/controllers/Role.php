@@ -14,6 +14,7 @@ class Role extends Middleware
         $this->load->model('user_role_model');
         $this->load->model('role_permission_model');
         $this->load->model('permission_model');
+        $this->load->helper('notif');
 
         $this->load->helper('format');
         $this->load->helper('userlog');
@@ -92,7 +93,10 @@ class Role extends Middleware
             foreach ($perm as $rows) {
                 $action[] = " " . $rows->action;
             }
-            $data[] = array("nama_role" => $nama_role, "action" => $action);
+            $data[] = array(
+                "nama_role" => $nama_role,
+                "action" => $action
+            );
         }
         echo json_encode($data);
         die;
@@ -104,14 +108,15 @@ class Role extends Middleware
 
         $id = decrypt($param2);
         $dt = $this->role_model->getById($id);
-        foreach ($dt as $row) {
-            $role_id         = encrypt($row->role_id);
-            $nama_role       = $row->nama_role;
-            $permission_id[] = $row->permission_id;
-            $action[]        = $row->action;
-        }
 
-        $data[] = array("role_id" => $role_id, "nama_role" => $nama_role, "permission_id" => $permission_id, "action" => $action);
+        foreach ($dt as $row) {
+            $data[] = array(
+                "role_id" => encrypt($row->role_id),
+                "nama_role" => $row->nama_role,
+                "permission_id" => $row->permission_id,
+                "action" => $row->action
+            );
+        }
         echo json_encode($data);
         die;
     }
@@ -145,30 +150,24 @@ class Role extends Middleware
                 }
 
                 $select = $this->user_role_model->getUserByRole($role_id);
-
-                // print_r($select);
-
-                $notif['judul']     = "Memperbaharui Role Permission";
-                $notif['tipe']      = "Role Permission diperbaharui";
-                $notif['baca']      = 0;
-
                 $roles = array();
+
                 foreach ($select as $key) {
                     $roles[] = array(
-                        'judul'   => "Memperbaharui Role Permission",
-                        'tipe'    => "Role Permission diperbaharui",
+                        'judul'   => "Administrator Mengubah Role Permission untuk " . $key->nama_role,
+                        'tipe'    => "Memperbaharui Role Permission ",
                         'baca'    => 0,
                         'user_id' => $key->user_id,
+                        'link'    => site_url('profile/index'),
+                        'tanggal' => date("Y-m-d H:i:s")
                     );
                 }
 
-                $this->notif_model->insert_batch($roles);
-
-                // if (is_array($roles)) {
-                //     $this->notif_model->insert_batch(json_encode($roles));
-                // } else {
-                //     $this->notif_model->add($roles);
-                // }
+                if (is_array($roles)) {
+                    $this->notif_model->insert_batch($roles);
+                } else {
+                    $this->notif_model->add($roles);
+                }
             }
             $this->log_model->addLog(userLog('Memperbaharui Role', 'Memperbaharui data role ' . $data['nama_role']));
             echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil diperbaharui'));

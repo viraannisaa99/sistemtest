@@ -20,6 +20,7 @@ class User extends Middleware
         $this->load->helper('encrypt');
         $this->load->helper('datetime');
         $this->load->helper('constraint');
+        $this->load->helper('notif');
     }
 
     public function index()
@@ -166,12 +167,7 @@ class User extends Middleware
                     }
                 }
 
-                $notif['judul']     = "Memperbaharui Role User";
-                $notif['tipe']      = "Role User diperbaharui";
-                $notif['baca']      = 0;
-                $notif['user_id']   = $user_id;
-
-                $this->notif_model->add($notif);
+                $this->notif_model->add(userNotif("Administrator Mengubah Role User " . $data['nama'], "Memperbaharui Role User", $user_id));
             } else {
                 $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
             }
@@ -253,41 +249,14 @@ class User extends Middleware
         die;
     }
 
-    public function userProfile()
-    {
-        if (!$this->session->userdata('logged_in')) {
-            redirect('/user/userProfile');
-        }
+    // public function userProfile()
+    // {
+    //     if (!$this->session->userdata('logged_in')) {
+    //         redirect('/user/userProfile');
+    //     }
 
-        $data['userData'] = $this->session->userdata('userData');
+    //     $data['userData'] = $this->session->userdata('userData');
 
-        $this->load->view('userProfile', $data);
-    }
-
-    public function totalNotif()
-    {
-        $total = $this->notif_model->total_rows();
-        $result['total'] = $total;
-        $result['msg'] = "Berhasil direfresh secara realtime";
-        echo json_encode($result);
-    }
-
-    public function listNotif()
-    {
-        $data = array();
-        $list = $this->notif_model->select();
-
-        foreach ($list as $row) {
-            $judul[] = $row->judul;
-        }
-
-        $data = array("judul" => $judul);
-
-        echo json_encode($data);
-    }
-
-    public function isRead()
-    {
-        $this->db->query("UPDATE notif SET baca = 1 WHERE baca=0");
-    }
+    //     $this->load->view('userProfile', $data);
+    // }
 }
