@@ -37,17 +37,6 @@ class User_model extends CI_Model
         return $this->db->get();
     }
 
-    function getById($id)
-    {
-        $this->db->select('pg.*, rl.nama_role, rl.role_id');
-        $this->db->from('users pg');
-        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
-        $this->db->join('role rl', 'rl.role_id = ur.role_id');
-        $this->db->where('pg.user_id', $id);
-
-        return $this->db->get()->result();
-    }
-
     function update($id, $data)
     {
         $this->db->where('user_id', $id);
@@ -90,10 +79,10 @@ class User_model extends CI_Model
         return $this->db->get();
     }
 
-    function updateProfile($data)
-    {
-        $this->db->where('user_id', $this->session->userdata('user_id'));
-        $this->db->update('users', $data);
-        return $this->db->affected_rows() > 0 ? TRUE : FALSE;
-    }
+    // function updateProfile($data)
+    // {
+    //     $this->db->where('user_id', $this->session->userdata('user_id'));
+    //     $this->db->update('users', $data);
+    //     return $this->db->affected_rows() > 0 ? TRUE : FALSE;
+    // }
 }

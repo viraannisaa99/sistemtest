@@ -10,12 +10,13 @@ class Login extends CI_Controller
         $this->load->model('log_model');
         $this->load->model('permission_model');
         $this->load->model('login_model');
+        $this->load->model('user_role_model');
+        $this->load->model('login_model');
+
         $this->load->helper('userLog');
         $this->load->helper('encrypt');
-
-        $this->load->model('login_model');
-        $this->config->load('google', TRUE);
         $this->load->library('google');
+        $this->config->load('google', TRUE);
     }
 
     public function index()
@@ -68,7 +69,7 @@ class Login extends CI_Controller
                     $data['modified'] = date("Y-m-d H:i:s");
                     $data['picture']  = $userData['picture'];
 
-                    $this->login_model->update($data, array('user_id' => $result['user_id']));
+                    $this->user_model->update($result['user_id'], $data);
                     $userID = $result['user_id'];
                 }
 
@@ -79,7 +80,7 @@ class Login extends CI_Controller
 
                 $this->role();
 
-                redirect('user/userProfile/');
+                redirect('dashboard');
 
                 return $userID ? $userID : false;
             } else {
@@ -92,7 +93,7 @@ class Login extends CI_Controller
     public function role()
     {
         $user_id = $this->session->userdata('user_id');
-        $cek_role  = $this->user_model->getById($user_id);
+        $cek_role  = $this->user_role_model->getById($user_id);
 
         foreach ($cek_role as $row) {
             $role_id[] = $row->role_id;

@@ -5,7 +5,7 @@ class User extends Middleware
 {
     function __construct()
     {
-        parent::__construct();
+        parent::__construct(false);
 
         $this->load->model('user_model');
         $this->load->model('role_model');
@@ -52,39 +52,35 @@ class User extends Middleware
         $data['password']        = hash('sha512', $this->input->post('password'));
         $data['status']          = 1;
 
-        if (userHasPermissions($page_data['permission'])) {
-            $empty = check_empty_form($data, array('email, username, password'));
-            if ($empty) {
-                $result = array('status' => 'error', 'msg' => 'Form penting tidak boleh kosong !');
-            } else {
-                if ($this->input->post('password') != $this->input->post('confirm_password'))
-                    $result = array('status' => 'error', 'msg' => 'Cek kembali confirm password !');
-                else {
-                    $result = array('status' => 'success', 'msg' => 'User berhasil ditambahkan');
-                    $this->user_model->add($data);
-
-                    $user_id = $this->db->insert_id();
-                    $role_id = $this->input->post('role_id');
-
-                    $user_role = array();
-                    foreach ($role_id as $key => $val) {
-                        $user_role[] = array(
-                            'user_id' => $user_id,
-                            'role_id' => $role_id[$key],
-                        );
-                    }
-
-                    if (is_array($role_id)) {
-                        $this->user_role_model->insert_batch($user_role);
-                    } else {
-                        $this->user_role_model->insert($user_role);
-                    }
-
-                    $this->log_model->addLog(userLog('Menambah User', 'Menambah user "' . $data['nama']));
-                }
-            }
+        $empty = check_empty_form($data, array('email, username, password'));
+        if ($empty) {
+            $result = array('status' => 'error', 'msg' => 'Form penting tidak boleh kosong !');
         } else {
-            $result = array('status' => 'error', 'msg' => 'Anda tidak berhak menambahkan data user');
+            if ($this->input->post('password') != $this->input->post('confirm_password'))
+                $result = array('status' => 'error', 'msg' => 'Cek kembali confirm password !');
+            else {
+                $result = array('status' => 'success', 'msg' => 'User berhasil ditambahkan');
+                $this->user_model->add($data);
+                $user_id = $this->db->insert_id();
+
+                // insert user role
+                $role_id = $this->input->post('role_id');
+                $user_role = array();
+                foreach ($role_id as $key => $val) {
+                    $user_role[] = array(
+                        'user_id' => $user_id,
+                        'role_id' => $role_id[$key],
+                    );
+                }
+
+                if (is_array($role_id)) {
+                    $this->user_role_model->insert_batch($user_role); // jika role > 1 maka insert batch
+                } else {
+                    $this->user_role_model->insert($user_role);
+                }
+
+                $this->log_model->addLog(userLog('Menambah User', 'Menambah user "' . $data['nama']));
+            }
         }
 
         echo json_encode($result);
@@ -95,21 +91,17 @@ class User extends Middleware
 
     public function show($param2 = '')
     {
-        $page_data['permission'] = 'user-show';
         $data = array();
-
-        if (userHasPermissions($page_data['permission'])) {
-            $id = decrypt($param2);
-            $dt = $this->user_model->getById($id);
-            foreach ($dt as $row) {
-                $nama        = $row->nama;
-                $email       = $row->email;
-                $username    = $row->username;
-                $nama_role[] = " " . $row->nama_role;
-            }
-
-            $data[] = array("nama" => $nama, "email" => $email, "username" => $username, "nama_role" => $nama_role);
+        $id = decrypt($param2);
+        $dt = $this->user_role_model->getById($id);
+        foreach ($dt as $row) {
+            $nama        = $row->nama;
+            $email       = $row->email;
+            $username    = $row->username;
+            $nama_role[] = " " . $row->nama_role;
         }
+        $data[] = array("nama" => $nama, "email" => $email, "username" => $username, "nama_role" => $nama_role);
+
         echo json_encode($data);
         die;
     }
@@ -119,7 +111,7 @@ class User extends Middleware
         $data = array();
 
         $id = decrypt($param2);
-        $dt = $this->user_model->getById($id);
+        $dt = $this->user_role_model->getById($id);
         foreach ($dt as $row) {
             $user_id    = encrypt($row->user_id);
             $role_id[]  = $row->role_id;
@@ -136,64 +128,53 @@ class User extends Middleware
 
     public function update($param2 = '')
     {
-        $page_data['permission'] = 'user-update';
+        $user_id          = decrypt($param2);
+        $data['nama']     = $this->input->post('nama');
+        $data['email']    = $this->input->post('email');
+        $data['username'] = $this->input->post('username');
 
-        if (userHasPermissions($page_data['permission'])) {
-            $user_id          = decrypt($param2);
-            $data['nama']     = $this->input->post('nama');
-            $data['email']    = $this->input->post('email');
-            $data['username'] = $this->input->post('username');
+        $this->user_model->update($user_id, $data);
 
-            $this->user_model->update($user_id, $data);
+        // update user role
+        if (userIsAdmin()) {
+            $this->user_role_model->delete($user_id);
+            $role_id = $this->input->post('role_id');
 
-            if (userIsAdmin()) {
-                $this->user_role_model->delete($user_id);
-
-                $role_id = $this->input->post('role_id');
-
-                if (is_array($role_id) || is_object($role_id)) {
-                    $user_role = array();
-                    foreach ($role_id as $key => $val) {
-                        $user_role[] = array(
-                            'user_id' => $user_id,
-                            'role_id' => $role_id[$key],
-                        );
-                    }
-
-                    if (is_array($role_id)) {
-                        $this->user_role_model->insert_batch($user_role);
-                    } else {
-                        $this->user_role_model->insert($user_role);
-                    }
+            if (is_array($role_id) || is_object($role_id)) {
+                $user_role = array();
+                foreach ($role_id as $key => $val) {
+                    $user_role[] = array(
+                        'user_id' => $user_id,
+                        'role_id' => $role_id[$key],
+                    );
                 }
 
-                $this->notif_model->add(userNotif("Administrator Mengubah Role User " . $data['nama'], "Memperbaharui Role User", $user_id));
-            } else {
-                $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
+                if (is_array($role_id)) {
+                    $this->user_role_model->insert_batch($user_role);
+                } else {
+                    $this->user_role_model->insert($user_role);
+                }
             }
-
-            echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
+            // insert notifikasi
+            $this->notif_model->add(userNotif("Administrator Mengubah Role User " . $data['nama'], "Memperbaharui Role User", $user_id));
+            $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
         } else {
-            echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak berhak mengupdate data user'));
+            echo json_encode(array('status' => 'error', 'msg' => 'Anda bukan administrator'));
         }
+        echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
         die;
     }
 
     public function delete($param2 = '')
     {
-        $page_data['permission'] = 'user-delete';
+        $user_id        = decrypt($param2);
+        $temp           = $this->user_role_model->getById($user_id);
+        $data['status'] = 2;
+        $this->user_model->update($user_id, $data);
+        $this->user_role_model->delete($user_id);
+        $this->log_model->addLog(userLog('Menghapus User', 'Menghapus user '));
+        echo json_encode(array('status' => 'success', 'msg' => 'User berhasil dihapus'));
 
-        if (userHasPermissions($page_data['permission'])) {
-            $user_id        = decrypt($param2);
-            $temp           = $this->user_model->getById($user_id);
-            $data['status'] = 2;
-            $this->user_model->update($user_id, $data);
-            $this->user_role_model->delete($user_id);
-            $this->log_model->addLog(userLog('Menghapus User', 'Menghapus user '));
-            echo json_encode(array('status' => 'success', 'msg' => 'User berhasil dihapus'));
-        } else {
-            echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak berhak menghapus data user'));
-        }
         die;
     }
 
@@ -203,7 +184,7 @@ class User extends Middleware
             echo json_encode(array('status' => 'error', 'msg' => 'Confirm Password salah !'));
         } else {
             $user_id          = $this->session->userdata('user_id');
-            $temp             = $this->user_model->getById($user_id);
+            $temp             = $this->user_role_model->getById($user_id);
             $data['password'] = hash('sha512', $this->input->post('password'));
             $this->user_model->update($user_id, $data);
             $this->log_model->addLog(userLog('Memperbaharui User', 'Reset password user ' . $temp[0]->nama));
@@ -224,11 +205,11 @@ class User extends Middleware
             if (userHasPermissions('user-show')) {
                 $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
             }
+
             if (userHasPermissions('user-update')) {
-                if ($this->session->userdata('user_id') == ($row->user_id) || userIsAdmin()) {
-                    $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
-                }
+                $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
             }
+
             if (userHasPermissions('user-delete')) {
                 $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
             }
@@ -249,14 +230,14 @@ class User extends Middleware
         die;
     }
 
-    // public function userProfile()
-    // {
-    //     if (!$this->session->userdata('logged_in')) {
-    //         redirect('/user/userProfile');
-    //     }
+    public function userProfile()
+    {
+        if (!$this->session->userdata('logged_in')) {
+            redirect('/user/userProfile');
+        }
 
-    //     $data['userData'] = $this->session->userdata('userData');
+        $data['userData'] = $this->session->userdata('userData');
 
-    //     $this->load->view('userProfile', $data);
-    // }
+        $this->load->view('userProfile', $data);
+    }
 }

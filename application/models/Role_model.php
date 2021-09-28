@@ -57,14 +57,14 @@ class Role_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    function getById($id)
-    {
-        $this->db->select('p.permission_id, p.action, rl.nama_role, rp.role_id');
-        $this->db->from('permission p');
-        $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id');
-        $this->db->join('role rl', 'rl.role_id = rp.role_id');
-        $this->db->where('rp.role_id', $id);
+    // function getById($id)
+    // {
+    //     $this->db->select('p.permission_id, p.action, rl.nama_role, rp.role_id');
+    //     $this->db->from('permission p');
+    //     $this->db->join('role_permission rp', 'rp.permission_id = p.permission_id');
+    //     $this->db->join('role rl', 'rl.role_id = rp.role_id');
+    //     $this->db->where('rp.role_id', $id);
 
-        return $this->db->get()->result();
-    }
+    //     return $this->db->get()->result();
+    // }
 }

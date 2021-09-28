@@ -5,7 +5,7 @@ class Notification extends Middleware
 {
     function __construct()
     {
-        parent::__construct();
+        parent::__construct(false);
 
         $this->load->model('user_model');
         $this->load->model('role_model');
@@ -32,9 +32,9 @@ class Notification extends Middleware
         $page_data['page_name']       = 'notification';
         $page_data['page_title']      = 'Notification';
 
-        $config['base_url']     = site_url('notification/index');
-        $config['total_rows']   = 30;
-        $config['per_page']     = 15;
+        $config['base_url']         = site_url('notification/index');
+        $config['total_rows']       = 30;
+        $config['per_page']         = 15;
 
         $this->pagination->initialize($config);
         $page_data['start']  = $this->uri->segment(3);

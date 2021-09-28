@@ -34,4 +34,15 @@ class User_role_model extends CI_Model
 
         return $this->db->get()->result();
     }
+
+    function getById($id)
+    {
+        $this->db->select('pg.*, rl.nama_role, rl.role_id');
+        $this->db->from('users pg');
+        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
+        $this->db->join('role rl', 'rl.role_id = ur.role_id');
+        $this->db->where('pg.user_id', $id);
+
+        return $this->db->get()->result();
+    }
 }

@@ -5,7 +5,7 @@ class Profile extends Middleware
 {
     function __construct()
     {
-        parent::__construct();
+        parent::__construct(false);
 
         $this->load->model('user_model');
         $this->load->model('role_model');
@@ -33,29 +33,6 @@ class Profile extends Middleware
         $this->load->view('index', $page_data);
     }
 
-    // public function edit()
-    // {
-    //     $page_data['page_function']   = __FUNCTION__;
-    //     $page_data['page_active']     = array('Profile');
-    //     $page_data['page_name']       = 'profile';
-    //     $page_data['page_title']      = 'Profile';
-
-    //     $page_data['user_edit'] = $this->user_model->getProfile()->row_array();
-
-    //     $this->load->view('editProfile', $page_data);
-    // }
-
-    // public function update()
-    // {
-    //     $data['nama'] = $this->input->post('nama');
-    //     $data['email']  = $this->input->post('email');
-    //     $data['username']   = $this->input->post('username');
-
-    //     $this->user_model->update($this->session->userdata('user_id'), $data);
-
-    //     redirect("profile");
-    // }
-
     public function edit()
     {
         $dt = $this->user_model->getProfile()->result();
@@ -66,22 +43,17 @@ class Profile extends Middleware
 
     public function update()
     {
-        $page_data['permission'] = 'user-update';
+        $user_id          = $this->session->userdata('user_id');
+        $data['nama']     = $this->input->post('nama');
+        $data['email']    = $this->input->post('email');
+        $data['username'] = $this->input->post('username');
 
-        if (userHasPermissions($page_data['permission'])) {
-            $user_id          = $this->session->userdata('user_id');
-            $data['nama']     = $this->input->post('nama');
-            $data['email']    = $this->input->post('email');
-            $data['username'] = $this->input->post('username');
+        $this->user_model->update($user_id, $data);
 
-            $this->user_model->update($user_id, $data);
+        $this->log_model->addLog(userLog('Memperbaharui Profile', $data['nama'] . ' Memperbaharui profile nya'));
 
-            $this->log_model->addLog(userLog('Memperbaharui Profile', $data['nama'] . ' Memperbaharui profile nya'));
+        echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
 
-            echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
-        } else {
-            echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak berhak mengupdate data user'));
-        }
         die;
     }
 }

@@ -10,8 +10,7 @@ class Log_model extends CI_Model
         $this->db->select('count(*) as total');
         $this->db->from('log');
 
-        $hasil = $this->db->get()->result();
-        return $hasil;
+        return $this->db->get();
     }
 
     function addLog($data)
@@ -38,8 +37,8 @@ class Log_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    function countAllLog()
-    {
-        return $this->db->get('log')->num_rows();
-    }
+    // function countAllLog()
+    // {
+    //     return $this->db->get('log')->num_rows();
+    // }
 }

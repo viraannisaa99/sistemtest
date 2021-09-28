@@ -29,7 +29,6 @@ class Notif_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    // get total rows
     function total_rows()
     {
         $this->db->from('notif');

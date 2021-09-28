@@ -5,7 +5,7 @@ class Log extends Middleware
 {
     function __construct()
     {
-        parent::__construct();
+        parent::__construct(false);
 
         $this->load->model('user_model');
         $this->load->model('log_model');
@@ -27,7 +27,7 @@ class Log extends Middleware
         $data['page_title']        = 'Log';
 
         $config['base_url'] = site_url('log/index');
-        $config['total_rows'] = $this->log_model->countAllLog();
+        $config['total_rows'] = $this->log_model->countLog()->num_rows();
         $config['per_page']     = 15;
 
         $this->pagination->initialize($config);

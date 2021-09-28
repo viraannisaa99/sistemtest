@@ -1,11 +1,11 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Dashboard extends Middleware
+class Dashboard extends CI_Controller
 {
     function __construct()
     {
-        parent::__construct();
+        parent::__construct(false);
 
         $this->load->model('user_model');
         $this->load->model('log_model');
@@ -27,7 +27,7 @@ class Dashboard extends Middleware
         $data['jumlah_user']        = $this->user_model->countUserByLevel();
         $data['jumlah_admin']       = $this->user_model->countUserByLevel('Administrator');
         $data['jumlah_pegawai']     = $this->user_model->countUserByLevel('Pegawai');
-        $data['jumlah_kunjungan']   = $this->log_model->countLog();
+        $data['jumlah_kunjungan']   = $this->log_model->countLog()->result();
 
         $config['base_url']     = site_url('dashboard/index');
         $config['total_rows']   = 30;

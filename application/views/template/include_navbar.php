@@ -62,7 +62,7 @@
 $(document).ready(function() {
     setInterval(function() {
         $.ajax({
-            url: "<?= base_url() ?>notification/totalNotif",
+            url: "<?= base_url() ?>notification/totalNotif", // count notifikasi
             type: "POST",
             dataType: "json",
             data: {},
@@ -74,9 +74,8 @@ $(document).ready(function() {
 })
 
 $(document).ready(function() {
-
     $.ajax({
-        url: "<?= base_url() ?>notification/listNotif",
+        url: "<?= base_url() ?>notification/listNotif", // list notifikasi
         type: "POST",
         dataType: "json",
         success: function(resp) {
@@ -85,9 +84,7 @@ $(document).ready(function() {
                 $.each(resp.judul, function() {
                     $("#judul").html(resp.judul);
                 });
-
                 resp.preventDefault();
-
             }
         }
     });
@@ -106,6 +103,3 @@ $(document).on('click', '.notif', function() {
     $('#total-notif').html('');
 });
 </script>
-
-
-<!-- End Navbar -->
