@@ -32,8 +32,6 @@ class Profile extends Middleware
 
         $page_data['profile'] = $this->user_model->getProfile()->row();
 
-		$this->pdf->setPaper('A4', 'potrait');
-		$this->pdf->filename = "laporan-profile.pdf";
         $this->load->view('index', $page_data);
     }
 
@@ -71,33 +69,15 @@ class Profile extends Middleware
 
     public function export()
     {
-        // $page_data['profile'] = $this->user_model->getProfile()->row();
+        $page_data['profile'] = $this->user_model->getProfile()->row();
 
-        $data = array(
-            "dataku" => array(
-                "nama" => "Petani Kode",
-                "url" => "http://petanikode.com"
-            )
-        );
+        $this->pdf->load_view('page/laporan_pdf', $page_data);
 
-		$this->pdf->setPaper('A4', 'potrait');
-		$this->pdf->filename = "laporan-profile.pdf";
-        
-        $this->load->view('page/laporan_pdf', $data);
+        $this->pdf->set_option('isRemoteEnabled', true);
+        $this->pdf->render();
+
+        $this->pdf->stream("profile.pdf");
         
     }
 
-    /**
-    * Get Download PDF File
-    *
-    * @return Response
-   */
-   function mypdf(){
-       
-	$this->load->library('pdf');
-  	$this->pdf->load_view('mypdf');
-  	$this->pdf->render();
-
-  	$this->pdf->stream("welcome.pdf");
-   }
 }

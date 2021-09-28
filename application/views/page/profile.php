@@ -59,7 +59,7 @@ function edit_function(task, id) {
 <div class="content">
     <div class="clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <a href="<?php echo base_url('profile/mypdf'); ?>" class="btn bg-blue col-white waves-effect">Export
+            <a href="<?php echo base_url('profile/export'); ?>" class="btn bg-blue col-white waves-effect">Export
                 Profile</a>
             <div class="main-body">
                 <div class="row gutters-sm">
