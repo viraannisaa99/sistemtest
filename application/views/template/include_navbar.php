@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <div class="navbar-wrapper">
             <a class="navbar-brand" href="javascript:;">
-                <h3 style="margin-top:0px"><b><?php echo $page_title ?></b></h3>
+                <h3 style="margin-top:0px"><b><?= $page_title ?></b></h3>
             </a>
         </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
@@ -47,9 +47,9 @@
                         </p>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                        <a class="dropdown-item" href="<?php echo base_url() . 'profile' ?>">Profile</a>
+                        <a class="dropdown-item" href="<?= base_url() . 'profile' ?>">Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="<?php echo base_url() . 'login/logout' ?>">Log out</a>
+                        <a class="dropdown-item" href="<?= base_url() . 'login/logout' ?>">Log out</a>
                     </div>
                 </li>
             </ul>
@@ -57,7 +57,7 @@
     </div>
 </nav>
 
-<script src="<?php echo base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
+<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     setInterval(function() {
@@ -73,21 +73,40 @@ $(document).ready(function() {
     }, 2000);
 })
 
+// $(document).ready(function() {
+//     $.ajax({
+//         url: "<?= base_url() ?>notification/listNotif", // list notifikasi
+//         type: "POST",
+//         dataType: "json",
+//         success: function(resp) {
+//             if (resp) {
+//                 // $('#judul').html(resp.judul);
+//                 $.each(resp.judul, function() {
+//                     $("#judul").html(resp.judul);
+//                 });
+//                 resp.preventDefault();
+//             }
+//         }
+//     });
+// })
+
 $(document).ready(function() {
-    $.ajax({
-        url: "<?= base_url() ?>notification/listNotif", // list notifikasi
-        type: "POST",
-        dataType: "json",
-        success: function(resp) {
-            if (resp) {
-                // $('#judul').html(resp.judul);
-                $.each(resp.judul, function() {
-                    $("#judul").html(resp.judul);
-                });
-                resp.preventDefault();
+    setInterval(function() {
+        $.ajax({
+            url: "<?= base_url() ?>notification/listNotif", // list notifikasi
+            type: "POST",
+            dataType: "json",
+            success: function(resp) {
+                if (resp) {
+                    $('#judul').html(resp.judul);
+                    // $.each(resp.judul, function() {
+                    //     $("#judul").html(resp.judul);
+                    // });
+                    // resp.preventDefault();
+                }
             }
-        }
-    });
+        });
+    }, 2000);
 })
 
 $(document).on('click', '.notif', function() {

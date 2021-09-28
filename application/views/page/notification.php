@@ -1,17 +1,17 @@
-<script src="<?php echo base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
+<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
 
 <style>
-ul.list-group.list-group-striped li:nth-of-type(odd) {
-    background: #edf2fb;
-}
+    ul.list-group.list-group-striped li:nth-of-type(odd) {
+        background: #edf2fb;
+    }
 
-ul.list-group.list-group-striped li:nth-of-type(even) {
-    background: #d7e3fc;
-}
+    ul.list-group.list-group-striped li:nth-of-type(even) {
+        background: #d7e3fc;
+    }
 
-ul.list-group.list-group-hover li:hover {
-    background: #CCCCFF;
-}
+    ul.list-group.list-group-hover li:hover {
+        background: #CCCCFF;
+    }
 </style>
 
 
@@ -31,23 +31,22 @@ ul.list-group.list-group-hover li:hover {
                     <ul class="list-group list-group-hover list-group-striped">
                         <?php $i = 1;
                         foreach ($notif as $row) : ?>
-                        <li class="list-group-item list-group-item d-flex justify-content-between align-items-center">
-                            <div class="flex-column">
-                                <h4><b><?= $row->judul ?></b></h4>
-                                <?= $row->tipe ?><br>
-                                <a href="<?= $row->link ?>">Lihat perubahan</a>
+                            <li class="list-group-item list-group-item d-flex justify-content-between align-items-center">
+                                <div class="flex-column">
+                                    <h4><b><?= $row->judul ?></b></h4>
+                                    <?= $row->tipe ?><br>
+                                    <a href="<?= $row->link ?>">Lihat perubahan</a>
 
-                            </div>
-                            <div class="flex-column">
-                                <h4><span
-                                        class="badge badge-info badge-pill"><?= time_passed(strtotime($row->tanggal)) ?></span>
-                                </h4>
-                            </div>
-                        </li>
+                                </div>
+                                <div class="flex-column">
+                                    <h4><span class="badge badge-info badge-pill"><?= time_passed(strtotime($row->tanggal)) ?></span>
+                                    </h4>
+                                </div>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                     <div class="card-footer">
-                        <?php echo $links; ?>
+                        <?= $links; ?>
                     </div>
                 </div>
             </div>

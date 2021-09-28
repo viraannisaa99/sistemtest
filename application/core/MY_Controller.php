@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Middleware extends CI_Controller
 {
-    function __construct($isCheckPermission = true)
+    function __construct()
     {
         parent::__construct();
         $this->load->helper('permission');
@@ -12,9 +12,11 @@ class Middleware extends CI_Controller
             redirect('login');
         }
 
-        if ($isCheckPermission) {
-            $obj = $this->uri->segment(1); // nama class
-            $action = $this->uri->segment(2); // nama function
+        $whitelist = ['dashboard', 'log', 'notification', 'profile'];
+        $obj = $this->uri->segment(1); // nama class
+        $action = $this->uri->segment(2); // nama function
+
+        if (!in_array($obj, $whitelist)) {
 
             $trans = array(
                 'edit' => 'update',
@@ -29,16 +31,9 @@ class Middleware extends CI_Controller
             $action = $action == '' ? 'show' : (isset($trans[$action]) ? $trans[$action] : $action);
             $permission = $obj . "-" . $action; // permission = user-add, user-show
 
-            if (!userHasPermissions($permission)) {
-                show_404();
+            if (!hasPermission($permission)) {
+                show_404(); // show not found if not has access
             }
         }
     }
-
-    // public function permission_allowed($perm = '')
-    // {
-    //     if (!userHasPermissions($perm)) {
-    //         redirect('dashboard');
-    //     }
-    // }
 }

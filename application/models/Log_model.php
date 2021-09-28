@@ -31,14 +31,94 @@ class Log_model extends CI_Model
         $this->db->limit($limit, $start);
 
         $this->load->helper('permission');
-        if (!userIsAdmin()) {
+        if (!isAdmin()) {
             $this->db->where('pg.user_id', $this->session->userdata('user_id'));
         }
         return $this->db->get()->result();
     }
 
-    // function countAllLog()
+    public function graph()
+    {
+        $this->db->select('*');
+        $this->db->from('log');
+        $this->db->group_by('WEEK(tgl)');
+        return $this->db->get()->result();
+    }
+
+    public function countGraph()
+    {
+        $this->db->select('count(*) as total');
+        $this->db->from('log');
+        $this->db->group_by('WEEK(tgl)');
+
+        return $this->db->get();
+    }
+
+    // public function userGraph()
     // {
-    //     return $this->db->get('log')->num_rows();
+    //     $this->db->select('*');
+    //     $this->db->from('log lg');
+    //     $this->db->join('users pg', 'pg.user_id = lg.log_id');
+    //     $this->db->group_by('pg.user_id');
+    //     return $this->db->get()->result();
     // }
+
+    // public function countUserGraph()
+    // {
+    //     $this->db->select('count(lg.log_id) as total');
+    //     $this->db->from('log lg');
+    //     $this->db->join('users pg', 'pg.user_id = lg.user_id');
+    //     $this->db->group_by('pg.user_id');
+
+    //     return $this->db->get();
+    // }
+
+    public function userGraph()
+    {
+        $this->db->select('*');
+        $this->db->from('log lg');
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
+        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
+        $this->db->join('role rl', 'rl.role_id = ur.role_id');
+        $this->db->group_by('rl.role_id');
+        return $this->db->get()->result();
+    }
+
+    public function countUserGraph()
+    {
+        $this->db->select('count(lg.log_id) as total');
+        $this->db->from('log lg');
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
+        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
+        $this->db->join('role rl', 'rl.role_id = ur.role_id');
+        $this->db->group_by('rl.role_id');
+
+        return $this->db->get();
+    }
+
+    function getLogExport()
+    {
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
+        $this->db->from('log lg');
+        $this->db->order_by('lg.tgl', 'desc');
+
+        $this->load->helper('permission');
+        if (!isAdmin()) {
+            $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        }
+        return $this->db->get()->result();
+    }
+
+    function getAllLog()
+    {
+        return $this->datatables
+            ->select('  
+                lg.log_id,
+                lg.jenis_aksi,
+                lg.keterangan,
+                lg.tgl
+            ')
+            ->from('log lg')
+            ->generate();
+    }
 }

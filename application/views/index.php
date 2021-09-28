@@ -1,5 +1,5 @@
 <?php include "template/header.php"; ?>
-<link href="<?php echo base_url() . 'assets/' ?>css/bootstrap-select.css" rel="stylesheet" />
+<link href="<?= base_url() . 'assets/' ?>css/bootstrap-select.css" rel="stylesheet" />
 
 <body class="">
     <div class="wrapper ">

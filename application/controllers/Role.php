@@ -80,16 +80,13 @@ class Role extends Middleware
     {
         $data = array();
         $id = decrypt($param2);
-        $dt = $this->role_model->getRoleById($id);
+        $dt = $this->role_permission_model->getById($id);
 
         foreach ($dt as $row) {
             $nama_role = $row->nama_role;
+            $action[] = " " . $row->action;
         }
 
-        $perm = $this->permission_model->getPermissionByRole($id);
-        foreach ($perm as $rows) {
-            $action[] = " " . $rows->action;
-        }
         $data[] = array(
             "nama_role" => $nama_role,
             "action" => $action
@@ -191,15 +188,15 @@ class Role extends Middleware
             $id       = encrypt($row->role_id);
             $li_btn   = array();
 
-            if (userHasPermissions('role-show')) {
+            if (hasPermission('role-show')) {
                 $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
             }
 
-            if (userHasPermissions('role-update')) {
+            if (hasPermission('role-update')) {
                 $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
             }
 
-            if (userHasPermissions('role-delete')) {
+            if (hasPermission('role-delete')) {
                 $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
             }
 

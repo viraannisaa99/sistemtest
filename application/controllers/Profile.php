@@ -19,6 +19,8 @@ class Profile extends Middleware
         $this->load->helper('encrypt');
         $this->load->helper('datetime');
         $this->load->helper('constraint');
+
+        $this->load->library('pdf');
     }
 
     public function index()
@@ -30,6 +32,8 @@ class Profile extends Middleware
 
         $page_data['profile'] = $this->user_model->getProfile()->row();
 
+		$this->pdf->setPaper('A4', 'potrait');
+		$this->pdf->filename = "laporan-profile.pdf";
         $this->load->view('index', $page_data);
     }
 
@@ -37,8 +41,16 @@ class Profile extends Middleware
     {
         $dt = $this->user_model->getProfile()->result();
 
-        echo json_encode($dt);
-        die;
+        foreach ($dt as $row) {
+            $id[] = $row->id;
+        }
+
+        if ($id != $this->session->userdata('user_id')) {
+            echo json_encode(array('status' => 'error', 'msg' => 'Anda bukan pemilik user ini'));
+        } else {
+            echo json_encode($dt);
+            die;
+        }
     }
 
     public function update()
@@ -56,4 +68,36 @@ class Profile extends Middleware
 
         die;
     }
+
+    public function export()
+    {
+        // $page_data['profile'] = $this->user_model->getProfile()->row();
+
+        $data = array(
+            "dataku" => array(
+                "nama" => "Petani Kode",
+                "url" => "http://petanikode.com"
+            )
+        );
+
+		$this->pdf->setPaper('A4', 'potrait');
+		$this->pdf->filename = "laporan-profile.pdf";
+        
+        $this->load->view('page/laporan_pdf', $data);
+        
+    }
+
+    /**
+    * Get Download PDF File
+    *
+    * @return Response
+   */
+   function mypdf(){
+       
+	$this->load->library('pdf');
+  	$this->pdf->load_view('mypdf');
+  	$this->pdf->render();
+
+  	$this->pdf->stream("welcome.pdf");
+   }
 }

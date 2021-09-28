@@ -5,7 +5,7 @@ class Dashboard extends CI_Controller
 {
     function __construct()
     {
-        parent::__construct(false);
+        parent::__construct();
 
         $this->load->model('user_model');
         $this->load->model('log_model');
@@ -28,6 +28,11 @@ class Dashboard extends CI_Controller
         $data['jumlah_admin']       = $this->user_model->countUserByLevel('Administrator');
         $data['jumlah_pegawai']     = $this->user_model->countUserByLevel('Pegawai');
         $data['jumlah_kunjungan']   = $this->log_model->countLog()->result();
+        $data['graph']              = $this->log_model->graph();
+        $data['countGraph']         = $this->log_model->countGraph()->result();
+
+        $data['userGraph']              = $this->log_model->userGraph();
+        $data['countUserGraph']         = $this->log_model->countUserGraph()->result();
 
         $config['base_url']     = site_url('dashboard/index');
         $config['total_rows']   = 30;

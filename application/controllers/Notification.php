@@ -5,7 +5,7 @@ class Notification extends Middleware
 {
     function __construct()
     {
-        parent::__construct(false);
+        parent::__construct(); // constructor false
 
         $this->load->model('user_model');
         $this->load->model('role_model');

@@ -5,7 +5,7 @@ class User extends Middleware
 {
     function __construct()
     {
-        parent::__construct(false);
+        parent::__construct();
 
         $this->load->model('user_model');
         $this->load->model('role_model');
@@ -126,6 +126,45 @@ class User extends Middleware
         die;
     }
 
+    // public function update($param2 = '')
+    // {
+    //     $user_id          = decrypt($param2);
+    //     $data['nama']     = $this->input->post('nama');
+    //     $data['email']    = $this->input->post('email');
+    //     $data['username'] = $this->input->post('username');
+
+    //     $this->user_model->update($user_id, $data);
+
+    //     if (!isAdmin() && encrypt($user_id) !== $this->session->userdata('user_id')) {
+    //         echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak bisa mengedit data ini'));
+    //     } else {
+    //         $this->user_role_model->delete($user_id);
+    //         $role_id = $this->input->post('role_id');
+
+    //         if (is_array($role_id) || is_object($role_id)) {
+    //             $user_role = array();
+    //             foreach ($role_id as $key => $val) {
+    //                 $user_role[] = array(
+    //                     'user_id' => $user_id,
+    //                     'role_id' => $role_id[$key],
+    //                 );
+    //             }
+
+    //             if (is_array($role_id)) {
+    //                 $this->user_role_model->insert_batch($user_role);
+    //             } else {
+    //                 $this->user_role_model->insert($user_role);
+    //             }
+    //         }
+    //         // insert notifikasi
+    //         $this->notif_model->add(userNotif("Administrator Mengubah Role User " . $data['nama'], "Memperbaharui Role User", $user_id));
+    //         $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
+
+    //         echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
+    //         die;
+    //     }
+    // }
+
     public function update($param2 = '')
     {
         $user_id          = decrypt($param2);
@@ -136,7 +175,7 @@ class User extends Middleware
         $this->user_model->update($user_id, $data);
 
         // update user role
-        if (userIsAdmin()) {
+        if (isAdmin()) {
             $this->user_role_model->delete($user_id);
             $role_id = $this->input->post('role_id');
 
@@ -159,7 +198,7 @@ class User extends Middleware
             $this->notif_model->add(userNotif("Administrator Mengubah Role User " . $data['nama'], "Memperbaharui Role User", $user_id));
             $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
         } else {
-            echo json_encode(array('status' => 'error', 'msg' => 'Anda bukan administrator'));
+            echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak bisa mengedit data ini'));
         }
         echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
         die;
@@ -202,15 +241,15 @@ class User extends Middleware
             $id       = encrypt($row->user_id);
             $li_btn   = array();
 
-            if (userHasPermissions('user-show')) {
+            if (hasPermission('user-show')) {
                 $li_btn[] = '<a href="javascript:;" class="btnShow_' . $id . '" onClick=\'show_function(' . $id . ')\'>Show</a>';
             }
 
-            if (userHasPermissions('user-update')) {
+            if (hasPermission('user-update')) {
                 $li_btn[] = '<a href="javascript:;" class="btnEdit_' . $id . '" onClick=\'edit_function("show",' . $id . ')\'>Edit</a>';
             }
 
-            if (userHasPermissions('user-delete')) {
+            if (hasPermission('user-delete')) {
                 $li_btn[] = '<a href="javascript:;" class="btnDelete_' . $id . '" onClick=\'delete_function(' . $id . ')\'>Delete</a>';
             }
 

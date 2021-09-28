@@ -1,14 +1,14 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-function userHasPermissions($permission = '')
+function hasPermission($permission = '')
 {
     $CI = get_instance();
 
     return in_array($permission, $CI->session->userdata('permissions'));
 }
 
-function userIsAdmin()
+function isAdmin()
 {
     $CI = get_instance();
 

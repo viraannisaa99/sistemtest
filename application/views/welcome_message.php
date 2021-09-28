@@ -19,8 +19,8 @@ The above copyright notice and this permission notice shall be included in all c
 
 <head>
 	<meta charset="utf-8" />
-	<link rel="apple-touch-icon" sizes="76x76" href="<?php echo base_url() . 'assets/' ?>img/apple-icon.png">
-	<link rel="icon" type="image/png" href=".<?php echo base_url() . 'assets/' ?>img/favicon.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="<?= base_url() . 'assets/' ?>img/apple-icon.png">
+	<link rel="icon" type="image/png" href=".<?= base_url() . 'assets/' ?>img/favicon.png">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>
 		Material Dashboard by Creative Tim
@@ -510,22 +510,22 @@ The above copyright notice and this permission notice shall be included in all c
 				<li class="header-title">Images</li>
 				<li class="active">
 					<a class="img-holder switch-trigger" href="javascript:void(0)">
-						<img src="<?php echo base_url() . 'assets/' ?>/img/sidebar-1.jpg" alt="">
+						<img src="<?= base_url() . 'assets/' ?>/img/sidebar-1.jpg" alt="">
 					</a>
 				</li>
 				<li>
 					<a class="img-holder switch-trigger" href="javascript:void(0)">
-						<img src="<?php echo base_url() . 'assets/' ?>img/sidebar-2.jpg" alt="">
+						<img src="<?= base_url() . 'assets/' ?>img/sidebar-2.jpg" alt="">
 					</a>
 				</li>
 				<li>
 					<a class="img-holder switch-trigger" href="javascript:void(0)">
-						<img src="<?php echo base_url() . 'assets/' ?>img/sidebar-3.jpg" alt="">
+						<img src="<?= base_url() . 'assets/' ?>img/sidebar-3.jpg" alt="">
 					</a>
 				</li>
 				<li>
 					<a class="img-holder switch-trigger" href="javascript:void(0)">
-						<img src="<?php echo base_url() . 'assets/' ?>img/sidebar-4.jpg" alt="">
+						<img src="<?= base_url() . 'assets/' ?>img/sidebar-4.jpg" alt="">
 					</a>
 				</li>
 				<li class="button-container">
