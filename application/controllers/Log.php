@@ -12,6 +12,7 @@ class Log extends Middleware
 
         $this->load->model('user_model');
         $this->load->model('log_model');
+        $this->load->model('role_model');
 
         $this->load->helper('format');
         $this->load->helper('userlog');
@@ -24,35 +25,17 @@ class Log extends Middleware
 
     public function index()
     {
-        $data['page_function']   = __FUNCTION__;
-        $data['page_active']       = array('Log');
+        $data['page_function']    = __FUNCTION__;
+        $data['page_active']      = array('Log');
         $data['page_name']        = 'log';
-        $data['page_title']        = 'Log';
+        $data['page_title']       = 'Log';
 
+        $data['nama_role']    = $this->role_model->getRoles()->result();
 
         $this->load->view('index', $data);
     }
-
-    public function pagination()
-    {
-        $dt    = $this->log_model->getAllLog();
-        $start = $this->input->post('start');
-        $data  = array();
-        foreach ($dt['data'] as $row) {
-            $th1 = ++$start . '.';
-            $th2 = $row->jenis_aksi;
-            $th3 = $row->keterangan;
-            $th4 = $row->tgl;
-            $data[] = gathered_data(array($th1, $th2, $th3, $th4));
-        }
-
-
-        $dt['data'] = $data;
-        echo json_encode($dt);
-        die;
-    }
     
-    public function export($param='')
+    public function export()
     {
         $data['tgl_a'] = $this->input->post('tgl_a');
         $data['tgl_b'] = $this->input->post('tgl_b');
@@ -92,4 +75,34 @@ class Log extends Middleware
 
         $this->load->view('log', $data);
     }
+
+    public function pagination()
+    {
+        $dt    = $this->log_model->getAllLog();
+        $start = $this->input->post('start');
+        $data  = array();
+        foreach ($dt['data'] as $row) {
+
+            $role = $this->role_model->getRoleByUser($row->user_id);
+            $nama_role = json_decode(json_encode(array_column($role, 'nama_role')), true);
+
+            
+            $th1 = ++$start . '.';
+            $th2 = $row->jenis_aksi;
+            $th3 = $row->keterangan;
+            $th4 = $row->tgl;
+            $th5 = implode(", ", $nama_role);
+            $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5));
+        }
+
+        $dt['data'] = $data;
+        echo json_encode($dt);
+        die;
+    }
+
+    public function filter()
+    {
+        $this->load->view('page/test');
+    }
+    
 }

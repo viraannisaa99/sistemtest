@@ -66,4 +66,16 @@ class Notif_model extends CI_Model
             ->where('nf.user_id', $this->session->userdata('user_id'))
             ->generate();
     }
+
+    function getNotifByDate($start, $end)
+    {
+        $this->db->join('users pg', 'pg.user_id = nf.user_id');
+        $this->db->from('notif nf');
+        $this->db->where('DATE(nf.tanggal) >=', $start);
+        $this->db->where('DATE(nf.tanggal) <=', $end);
+        $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        $this->db->order_by('DATE(nf.tanggal)');
+
+        return $this->db->get()->result();
+    }
 }

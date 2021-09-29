@@ -103,7 +103,8 @@ class Log_model extends CI_Model
                 lg.log_id,
                 lg.jenis_aksi,
                 lg.keterangan,
-                lg.tgl
+                lg.tgl,
+                lg.user_id,
             ')
             ->from('log lg')
             ->generate();
@@ -132,7 +133,6 @@ class Log_model extends CI_Model
         $this->db->order_by('DATE(lg.tgl)');
 
         return $this->db->get()->result();
-
     }
 
 }

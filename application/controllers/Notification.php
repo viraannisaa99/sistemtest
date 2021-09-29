@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Notification extends Middleware
 {
     function __construct()
@@ -32,14 +35,6 @@ class Notification extends Middleware
         $page_data['page_name']       = 'notification';
         $page_data['page_title']      = 'Notification';
 
-        $config['base_url']         = site_url('notification/index');
-        $config['total_rows']       = 30;
-        $config['per_page']         = 15;
-
-        $this->pagination->initialize($config);
-        $page_data['start']  = $this->uri->segment(3);
-        $page_data['notif']    = $this->notif_model->getNotif($config['per_page'], $page_data['start']);
-        $page_data['links'] = $this->pagination->create_links();
 
         $this->load->view('index', $page_data);
     }
@@ -93,6 +88,45 @@ class Notification extends Middleware
         $dt['data'] = $data;
         echo json_encode($dt);
         die;
+    }
+
+    public function export()
+    {
+        $data['tgl_a'] = $this->input->post('tgl_a');
+        $data['tgl_b'] = $this->input->post('tgl_b');
+        
+        $allLog = $this->notif_model->getNotifByDate($data['tgl_a'], $data['tgl_b']);
+        
+        $spreadsheet = new Spreadsheet;
+
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'No')
+            ->setCellValue('B1', 'Judul')
+            ->setCellValue('C1', 'Tipe')
+            ->setCellValue('D1', 'Tanggal');
+
+        $kolom = 2;
+        $nomor = 1;
+        foreach ($allLog as $log) {
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $kolom, $nomor)
+                ->setCellValue('B' . $kolom, $log->judul)
+                ->setCellValue('C' . $kolom, $log->tipe)
+                ->setCellValue('D' . $kolom, date('j F Y', strtotime($log->tanggal)));
+
+            $kolom++;
+            $nomor++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="Log.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+
+        $this->load->view('log', $data);
     }
 
 }
