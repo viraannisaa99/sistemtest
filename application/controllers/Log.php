@@ -29,15 +29,6 @@ class Log extends Middleware
         $data['page_name']        = 'log';
         $data['page_title']        = 'Log';
 
-        $config['base_url'] = site_url('log/index');
-        $config['total_rows'] = $this->log_model->countLog()->num_rows();
-        $config['per_page']     = 15;
-
-        $this->pagination->initialize($config);
-        $data['start']  = $this->uri->segment(3);
-        $data['log']    = $this->log_model->getLog($config['per_page'], $data['start']);
-        $data['links'] = $this->pagination->create_links();
-
 
         $this->load->view('index', $data);
     }
@@ -60,11 +51,14 @@ class Log extends Middleware
         echo json_encode($dt);
         die;
     }
-
-    public function export()
+    
+    public function export($param='')
     {
-        $allLog = $this->log_model->getLogExport();
-
+        $data['tgl_a'] = $this->input->post('tgl_a');
+        $data['tgl_b'] = $this->input->post('tgl_b');
+        
+        $allLog = $this->log_model->getLogByDate($data['tgl_a'], $data['tgl_b']);
+        
         $spreadsheet = new Spreadsheet;
 
         $spreadsheet->setActiveSheetIndex(0)
@@ -95,5 +89,7 @@ class Log extends Middleware
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
+
+        $this->load->view('log', $data);
     }
 }

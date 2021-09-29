@@ -96,19 +96,6 @@ class Log_model extends CI_Model
         return $this->db->get();
     }
 
-    function getLogExport()
-    {
-        $this->db->join('users pg', 'pg.user_id = lg.user_id');
-        $this->db->from('log lg');
-        $this->db->order_by('lg.tgl', 'desc');
-
-        $this->load->helper('permission');
-        if (!isAdmin()) {
-            $this->db->where('pg.user_id', $this->session->userdata('user_id'));
-        }
-        return $this->db->get()->result();
-    }
-
     function getAllLog()
     {
         return $this->datatables
@@ -121,4 +108,31 @@ class Log_model extends CI_Model
             ->from('log lg')
             ->generate();
     }
+
+    function getExportAll()
+    {
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
+        $this->db->from('log lg');
+        $this->db->order_by('lg.tgl', 'desc');
+
+        $this->load->helper('permission');
+        if (!isAdmin()) {
+            $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        }
+        return $this->db->get()->result();
+    }
+
+    function getLogByDate($start, $end)
+    {
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
+        $this->db->from('log lg');
+        $this->db->where('DATE(lg.tgl) >=', $start);
+        $this->db->where('DATE(lg.tgl) <=', $end);
+        $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        $this->db->order_by('DATE(lg.tgl)');
+
+        return $this->db->get()->result();
+
+    }
+
 }

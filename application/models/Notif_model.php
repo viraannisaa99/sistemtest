@@ -51,4 +51,19 @@ class Notif_model extends CI_Model
         $this->db->limit($limit, $start);
         return $this->db->get()->result();
     }
+
+    function getAllNotif()
+    {
+        return $this->datatables
+            ->select('  
+                nf.judul,
+                nf.tipe,
+                nf.link,
+                nf.tanggal,
+                nf.status
+            ')
+            ->from('notif nf')
+            ->where('nf.user_id', $this->session->userdata('user_id'))
+            ->generate();
+    }
 }

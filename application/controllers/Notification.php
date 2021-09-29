@@ -75,4 +75,24 @@ class Notification extends Middleware
     {
         $this->db->query("UPDATE notif SET baca = 1 WHERE baca=0");
     }
+
+    public function pagination()
+    {
+        $dt    = $this->notif_model->getAllNotif();
+        $start = $this->input->post('start');
+        $data  = array();
+        foreach ($dt['data'] as $row) {
+            $th1 = ++$start . '.';
+            $th2 = $row->judul;
+            $th3 = $row->tipe;
+            $th4 = $row->link;
+            $th5 = $row->tanggal;
+            $data[] = gathered_data(array($th1, $th2, $th3, $th4, $th5));
+        }
+
+        $dt['data'] = $data;
+        echo json_encode($dt);
+        die;
+    }
+
 }
