@@ -42,6 +42,25 @@ class Log extends Middleware
         $this->load->view('index', $data);
     }
 
+    public function pagination()
+    {
+        $dt    = $this->log_model->getAllLog();
+        $start = $this->input->post('start');
+        $data  = array();
+        foreach ($dt['data'] as $row) {
+            $th1 = ++$start . '.';
+            $th2 = $row->jenis_aksi;
+            $th3 = $row->keterangan;
+            $th4 = $row->tgl;
+            $data[] = gathered_data(array($th1, $th2, $th3, $th4));
+        }
+
+
+        $dt['data'] = $data;
+        echo json_encode($dt);
+        die;
+    }
+
     public function export()
     {
         $allLog = $this->log_model->getLogExport();
@@ -58,7 +77,6 @@ class Log extends Middleware
         $kolom = 2;
         $nomor = 1;
         foreach ($allLog as $log) {
-
             $spreadsheet->setActiveSheetIndex(0)
                 ->setCellValue('A' . $kolom, $nomor)
                 ->setCellValue('B' . $kolom, $log->jenis_aksi)
@@ -77,24 +95,5 @@ class Log extends Middleware
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
-    }
-
-    public function pagination()
-    {
-        $dt    = $this->log_model->getAllLog();
-        $start = $this->input->post('start');
-        $data  = array();
-        foreach ($dt['data'] as $row) {
-            $th1 = ++$start . '.';
-            $th2 = $row->jenis_aksi;
-            $th3 = $row->keterangan;
-            $th4 = $row->tgl;
-            $data[] = gathered_data(array($th1, $th2, $th3, $th4));
-        }
-
-
-        $dt['data'] = $data;
-        echo json_encode($dt);
-        die;
     }
 }

@@ -48,19 +48,10 @@ class Pdf extends Dompdf
     {
         $html = $this->ci()->load->view($view, $data, TRUE);
         $this->load_html($html);
-        // Render the PDF
-        $this->render();
-        // Output the generated PDF to Browser
-        $this->stream($this->filename, array("Attachment" => false));
+        $this->set_option('isRemoteEnabled', true);
+        
+        $this->render(); // render the pdf
+        $this->stream($this->filename, array("Attachment" => false)); // generate pdf to browser
     }
 
-    // function createPDF($html, $filename='', $download=TRUE, $paper='A4', $orientation='portrait'){
-    //     $this->load_html($html);
-    //     $this->set_paper($paper, $orientation);
-    //     $this->render();
-    //     if($download)
-    //         $this->stream($filename.'.pdf', array('Attachment' => 1));
-    //     else
-    //         $this->stream($filename.'.pdf', array('Attachment' => 0));
-    // }
 }

@@ -71,13 +71,7 @@ class Profile extends Middleware
     {
         $page_data['profile'] = $this->user_model->getProfile()->row();
 
-        $this->pdf->load_view('page/laporan_pdf', $page_data);
-
-        $this->pdf->set_option('isRemoteEnabled', true);
-        $this->pdf->render();
-
-        $this->pdf->stream("profile.pdf");
-        
+        $this->pdf->load_view('page/exportPdf', $page_data);
     }
 
 }
