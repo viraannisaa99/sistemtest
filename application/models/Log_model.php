@@ -37,7 +37,7 @@ class Log_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    public function graph()
+    public function logGraph()
     {
         $this->db->select('*');
         $this->db->from('log');
@@ -45,7 +45,7 @@ class Log_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    public function countGraph()
+    public function countLogGraph()
     {
         $this->db->select('count(*) as total');
         $this->db->from('log');
@@ -54,26 +54,7 @@ class Log_model extends CI_Model
         return $this->db->get();
     }
 
-    // public function userGraph()
-    // {
-    //     $this->db->select('*');
-    //     $this->db->from('log lg');
-    //     $this->db->join('users pg', 'pg.user_id = lg.log_id');
-    //     $this->db->group_by('pg.user_id');
-    //     return $this->db->get()->result();
-    // }
-
-    // public function countUserGraph()
-    // {
-    //     $this->db->select('count(lg.log_id) as total');
-    //     $this->db->from('log lg');
-    //     $this->db->join('users pg', 'pg.user_id = lg.user_id');
-    //     $this->db->group_by('pg.user_id');
-
-    //     return $this->db->get();
-    // }
-
-    public function userGraph()
+    public function userLogGraph()
     {
         $this->db->select('*');
         $this->db->from('log lg');
@@ -84,7 +65,7 @@ class Log_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    public function countUserGraph()
+    public function countUserLogGraph()
     {
         $this->db->select('count(lg.log_id) as total');
         $this->db->from('log lg');
@@ -110,19 +91,22 @@ class Log_model extends CI_Model
             ->generate();
     }
 
-    function getExportAll()
+    function getAllLogRange($start, $end)
     {
-        $this->db->join('users pg', 'pg.user_id = lg.user_id');
-        $this->db->from('log lg');
-        $this->db->order_by('lg.tgl', 'desc');
-
-        $this->load->helper('permission');
-        if (!isAdmin()) {
-            $this->db->where('pg.user_id', $this->session->userdata('user_id'));
-        }
-        return $this->db->get()->result();
+        return $this->datatables
+            ->select('  
+                lg.log_id,
+                lg.jenis_aksi,
+                lg.keterangan,
+                lg.tgl,
+                lg.user_id,
+            ')
+            ->from('log lg')
+            ->where('DATE(lg.tgl) >=', $start)
+            ->where('DATE(lg.tgl) <=', $end)
+            ->generate();
     }
-
+    
     function getLogByDate($start, $end)
     {
         $this->db->join('users pg', 'pg.user_id = lg.user_id');

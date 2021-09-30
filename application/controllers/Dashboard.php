@@ -21,18 +21,18 @@ class Dashboard extends CI_Controller
 
     public function index()
     {
-        $data['page_active']       = array('Dashboard');
-        $data['page_name']         = 'dashboard';
-        $data['page_title']        = 'Dashboard';
+        $data['page_active']        = array('Dashboard');
+        $data['page_name']          = 'dashboard';
+        $data['page_title']         = 'Dashboard';
         $data['jumlah_user']        = $this->user_model->countUserByLevel();
         $data['jumlah_admin']       = $this->user_model->countUserByLevel('Administrator');
         $data['jumlah_pegawai']     = $this->user_model->countUserByLevel('Pegawai');
         $data['jumlah_kunjungan']   = $this->log_model->countLog()->result();
-        $data['graph']              = $this->log_model->graph();
-        $data['countGraph']         = $this->log_model->countGraph()->result();
+        $data['graph']              = $this->log_model->logGraph();
+        $data['countGraph']         = $this->log_model->countLogGraph()->result();
 
-        $data['userGraph']              = $this->log_model->userGraph();
-        $data['countUserGraph']         = $this->log_model->countUserGraph()->result();
+        $data['userGraph']          = $this->log_model->userLogGraph();
+        $data['countUserGraph']     = $this->log_model->countUserLogGraph()->result();
 
         $config['base_url']     = site_url('dashboard/index');
         $config['total_rows']   = 30;

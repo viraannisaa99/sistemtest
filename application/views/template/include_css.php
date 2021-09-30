@@ -14,3 +14,6 @@
 
 <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" />
+
+<link href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/
+ui-lightness/jquery-ui.css' rel='stylesheet'>

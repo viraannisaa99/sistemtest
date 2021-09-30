@@ -282,6 +282,7 @@ class Datatables
         else
           $this->ci->db->order_by($this->columns[$key['column']], $key['dir']);
   }
+
   /**
    * Generates a %LIKE% portion of the query
    *
@@ -316,6 +317,7 @@ class Datatables
       }
 
       $sWhere = substr_replace($sWhere, '', -3);
+
     }
 
     if ($drop_filter && $sSearch)
