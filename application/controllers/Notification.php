@@ -53,7 +53,16 @@ class Notification extends Middleware
         $list = $this->notif_model->select();
 
         foreach ($list as $row) {
-            $judul[] = $row->judul;
+            // $judul[] = '';
+            // $judul[] = '<li>
+            //                 <a href=" ' . $row->link . '">
+            //                     <strong>' . $row->judul . '</strong>
+            //                 </a>
+            //             </li>';
+
+            $judul[] = '<a href=" ' . $row->link . '" class="dropdown-item bg-transparent" id="judul" style="padding-left: 0; padding-right: 0;">' . $row->judul . '</a>';
+
+            // $judul[] = '<a href=" ' . $row->link . '" id="judul" class="dropdown-item bg-transparent">' . $row->judul . '</a>';
         }
 
         if (empty($list)) {
@@ -94,9 +103,9 @@ class Notification extends Middleware
     {
         $data['tgl_a'] = $this->input->post('tgl_a');
         $data['tgl_b'] = $this->input->post('tgl_b');
-        
+
         $allLog = $this->notif_model->getNotifByDate($data['tgl_a'], $data['tgl_b']);
-        
+
         $spreadsheet = new Spreadsheet;
 
         $spreadsheet->setActiveSheetIndex(0)
@@ -128,5 +137,4 @@ class Notification extends Middleware
 
         $this->load->view('log', $data);
     }
-
 }

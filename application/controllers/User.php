@@ -126,45 +126,6 @@ class User extends Middleware
         die;
     }
 
-    // public function update($param2 = '')
-    // {
-    //     $user_id          = decrypt($param2);
-    //     $data['nama']     = $this->input->post('nama');
-    //     $data['email']    = $this->input->post('email');
-    //     $data['username'] = $this->input->post('username');
-
-    //     $this->user_model->update($user_id, $data);
-
-    //     if (!isAdmin() && encrypt($user_id) !== $this->session->userdata('user_id')) {
-    //         echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak bisa mengedit data ini'));
-    //     } else {
-    //         $this->user_role_model->delete($user_id);
-    //         $role_id = $this->input->post('role_id');
-
-    //         if (is_array($role_id) || is_object($role_id)) {
-    //             $user_role = array();
-    //             foreach ($role_id as $key => $val) {
-    //                 $user_role[] = array(
-    //                     'user_id' => $user_id,
-    //                     'role_id' => $role_id[$key],
-    //                 );
-    //             }
-
-    //             if (is_array($role_id)) {
-    //                 $this->user_role_model->insert_batch($user_role);
-    //             } else {
-    //                 $this->user_role_model->insert($user_role);
-    //             }
-    //         }
-    //         // insert notifikasi
-    //         $this->notif_model->add(userNotif("Administrator Mengubah Role User " . $data['nama'], "Memperbaharui Role User", $user_id));
-    //         $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
-
-    //         echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
-    //         die;
-    //     }
-    // }
-
     public function update($param2 = '')
     {
         $user_id          = decrypt($param2);

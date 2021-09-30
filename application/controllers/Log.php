@@ -30,18 +30,17 @@ class Log extends Middleware
         $data['page_name']        = 'log';
         $data['page_title']       = 'Log';
 
-        $data['nama_role']    = $this->role_model->getRoles()->result();
-
+        $data['nama_role']        = $this->role_model->getRoles()->result();
         $this->load->view('index', $data);
     }
-    
+
     public function export()
     {
         $data['tgl_a'] = $this->input->post('tgl_a');
         $data['tgl_b'] = $this->input->post('tgl_b');
-        
+
         $allLog = $this->log_model->getLogByDate($data['tgl_a'], $data['tgl_b']);
-        
+
         $spreadsheet = new Spreadsheet;
 
         $spreadsheet->setActiveSheetIndex(0)
@@ -86,7 +85,6 @@ class Log extends Middleware
             $role = $this->role_model->getRoleByUser($row->user_id);
             $nama_role = json_decode(json_encode(array_column($role, 'nama_role')), true);
 
-            
             $th1 = ++$start . '.';
             $th2 = $row->jenis_aksi;
             $th3 = $row->keterangan;
@@ -104,5 +102,4 @@ class Log extends Middleware
     {
         $this->load->view('page/test');
     }
-    
 }
