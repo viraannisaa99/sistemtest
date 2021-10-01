@@ -117,8 +117,17 @@ class Log extends Middleware
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
+        $xlsData = ob_get_contents();
 
-        echo json_encode($data);
+        // echo json_encode($data);
+        // die;
+
+        $response =  array(
+            'op' => 'ok',
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
+        );
+
+        die(json_encode($response));
     }
 
     public function pagination()

@@ -108,15 +108,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     $('#start_d, #end_d').on('keyup change', function() {
         // e.preventDefault();
         $('#table').DataTable().ajax.reload();
-
-    });
-    $('#exp').on('click', function(e) {
-
         e.preventDefault();
 
     });
-
-
 });
 
 function export_function() {
@@ -133,8 +127,10 @@ function export_function() {
         },
         dataType: 'json',
         success: function(data) {
-            e.preventDefault();
+            var win = window.open(" ", "_blank");
+            win.location.href = data;
         },
+
     });
 }
 </script>
