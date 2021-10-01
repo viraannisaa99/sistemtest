@@ -28,8 +28,8 @@ class Dashboard extends CI_Controller
         $data['jumlah_admin']       = $this->user_model->countUserByLevel('Administrator');
         $data['jumlah_pegawai']     = $this->user_model->countUserByLevel('Pegawai');
         $data['jumlah_kunjungan']   = $this->log_model->countLog()->result();
-        $data['graph']              = $this->log_model->logGraph();
-        $data['countGraph']         = $this->log_model->countLogGraph()->result();
+        $data['logGraph']              = $this->log_model->logGraph();
+        $data['countLogGraph']         = $this->log_model->countLogGraph()->result();
 
         $data['userGraph']          = $this->log_model->userLogGraph();
         $data['countUserGraph']     = $this->log_model->countUserLogGraph()->result();

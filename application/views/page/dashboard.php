@@ -166,19 +166,23 @@ ul.list-group.list-group-hover li:hover {
     </div>
 </div>
 
-<!-- graph -->
+<!-- Log graph perminggu -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script type="text/javascript">
 var ctx = document.getElementById('myChart').getContext('2d');
+var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+gradientStroke.addColorStop(0, "#80b6f4");
+gradientStroke.addColorStop(1, "#f49080");
+
 var chart = new Chart(ctx, {
     type: 'bar',
     data: {
         labels: [
             <?php
-                if (count($graph) > 0) {
-                    foreach ($graph as $data) {
-                        $tgl = indo_date($data->tgl);
+                if (count($logGraph) > 0) {
+                    foreach ($logGraph as $data) {
+                        $tgl = indo_date($data->tgl); // label
                         echo "'" . $tgl . "',";
                     }
                 }
@@ -186,13 +190,13 @@ var chart = new Chart(ctx, {
         ],
         datasets: [{
             label: 'Jumlah Kunjungan',
-            backgroundColor: '#66bb6a',
-            borderColor: '##93C3D2',
+            backgroundColor: gradientStroke,
+            borderColor: '#93C3D2',
             data: [
                 <?php
-                    if (count($countGraph) > 0) {
-                        foreach ($countGraph as $data) {
-                            echo $data->total . ", ";
+                    if (count($countLogGraph) > 0) {
+                        foreach ($countLogGraph as $data) {
+                            echo $data->total . ", "; // chart by count
                         }
                     }
                     ?>
@@ -202,6 +206,7 @@ var chart = new Chart(ctx, {
 });
 </script>
 
+<!-- Log Graph per role -->
 <script type="text/javascript">
 var ctx = document.getElementById('userChart').getContext('2d');
 var chart = new Chart(ctx, {
@@ -218,8 +223,8 @@ var chart = new Chart(ctx, {
         ],
         datasets: [{
             label: 'Jumlah Kunjungan',
-            backgroundColor: '#ab47bc',
-            borderColor: '##93C3D2',
+            backgroundColor: gradientStroke,
+            borderColor: gradientStroke,
             data: [
                 <?php
                     if (count($countUserGraph) > 0) {

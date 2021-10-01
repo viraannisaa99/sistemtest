@@ -71,7 +71,6 @@ class Profile extends Middleware
     {
         $page_data['profile'] = $this->user_model->getProfile()->row();
 
-        $this->pdf->load_view('page/exportPdf', $page_data);
+        $this->pdf->load_view('exportPdf', $page_data);
     }
-
 }

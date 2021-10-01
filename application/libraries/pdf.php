@@ -49,9 +49,9 @@ class Pdf extends Dompdf
         $html = $this->ci()->load->view($view, $data, TRUE);
         $this->load_html($html);
         $this->set_option('isRemoteEnabled', true);
-        
+        $this->set_base_path(base_url() . './assets/css/');
+
         $this->render(); // render the pdf
         $this->stream($this->filename, array("Attachment" => false)); // generate pdf to browser
     }
-
 }

@@ -79,40 +79,44 @@ class Log_model extends CI_Model
 
     function getAllLog()
     {
-        return $this->datatables
-            ->select('  
-                lg.log_id,
-                lg.jenis_aksi,
-                lg.keterangan,
-                lg.tgl,
-                lg.user_id,
-            ')
-            ->from('log lg')
-            ->generate();
+        $start = $this->input->post('start_d');
+        $end = $this->input->post('end_d');
+
+        $this->datatables->select('  
+                            lg.log_id,
+                            lg.jenis_aksi,
+                            lg.keterangan,
+                            lg.tgl,
+                            lg.user_id');
+        $this->datatables->from('log lg');
+
+        if (!empty($start && $end)) {
+            $this->datatables->where("DATE(lg.tgl) BETWEEN '$start' AND '$end'"); // if date filter not null then use where
+        }
+
+        return $this->datatables->generate();
     }
 
-    function getAllLogRange($start, $end)
-    {
-        return $this->datatables
-            ->select('  
-                lg.log_id,
-                lg.jenis_aksi,
-                lg.keterangan,
-                lg.tgl,
-                lg.user_id,
-            ')
-            ->from('log lg')
-            ->where('DATE(lg.tgl) >=', $start)
-            ->where('DATE(lg.tgl) <=', $end)
-            ->generate();
-    }
-    
     function getLogByDate($start, $end)
     {
         $this->db->join('users pg', 'pg.user_id = lg.user_id');
         $this->db->from('log lg');
         $this->db->where('DATE(lg.tgl) >=', $start);
         $this->db->where('DATE(lg.tgl) <=', $end);
+        $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        $this->db->order_by('DATE(lg.tgl)');
+
+        return $this->db->get()->result();
+    }
+
+    function getLogWithoutDate()
+    {
+        $start = $this->input->post('start_d');
+        $end = $this->input->post('end_d');
+
+        $this->db->join('users pg', 'pg.user_id = lg.user_id');
+        $this->db->from('log lg');
+        $this->db->where("DATE(lg.tgl) BETWEEN '$start' AND '$end'");
         $this->db->where('pg.user_id', $this->session->userdata('user_id'));
         $this->db->order_by('DATE(lg.tgl)');
 
