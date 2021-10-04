@@ -4,6 +4,25 @@ if (!defined('BASEPATH'))
 
 class User_model extends CI_Model
 {
+
+    function update($id, $data)
+    {
+        $this->db->where('user_id', $id);
+        $this->db->update('users', $data);
+        return $this->db->affected_rows() > 0 ? TRUE : FALSE;
+    }
+
+    function add($data)
+    {
+        $this->db->insert('users', $data);
+        return $this->db->affected_rows() > 0 ? $this->db->insert_id() : FALSE;
+    }
+
+    function delete($id)
+    {
+        return $this->db->delete('users', array('user_id' => $id));
+    }
+
     function countUserByLevel($nama_role = "")
     {
         $this->db->select('count(*) as total');
@@ -37,22 +56,13 @@ class User_model extends CI_Model
         return $this->db->get();
     }
 
-    function update($id, $data)
+    function getProfile()
     {
-        $this->db->where('user_id', $id);
-        $this->db->update('users', $data);
-        return $this->db->affected_rows() > 0 ? TRUE : FALSE;
-    }
+        $this->db->select('pg.*');
+        $this->db->from('users pg');
+        $this->db->where(array('pg.user_id' => $this->session->userdata('user_id')));
 
-    function add($data)
-    {
-        $this->db->insert('users', $data);
-        return $this->db->affected_rows() > 0 ? $this->db->insert_id() : FALSE;
-    }
-
-    function delete($id)
-    {
-        return $this->db->delete('users', array('user_id' => $id));
+        return $this->db->get();
     }
 
     function getAllUser()
@@ -69,20 +79,4 @@ class User_model extends CI_Model
             ->where('pg.status = 1')
             ->generate();
     }
-
-    function getProfile()
-    {
-        $this->db->select('pg.*');
-        $this->db->from('users pg');
-        $this->db->where(array('pg.user_id' => $this->session->userdata('user_id')));
-
-        return $this->db->get();
-    }
-
-    // function updateProfile($data)
-    // {
-    //     $this->db->where('user_id', $this->session->userdata('user_id'));
-    //     $this->db->update('users', $data);
-    //     return $this->db->affected_rows() > 0 ? TRUE : FALSE;
-    // }
 }

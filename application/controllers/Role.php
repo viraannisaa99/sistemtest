@@ -67,7 +67,7 @@ class Role extends Middleware
                 $this->role_permission_model->insert($role_permission);
             }
 
-            $this->log_model->addLog(userLog('Menambah Role', 'Menambah role "' . $data['nama_role']));
+            $this->log_model->add(userLog('Menambah Role', 'Menambah role "' . $data['nama_role']));
         }
 
         echo json_encode($result);
@@ -161,7 +161,7 @@ class Role extends Middleware
                 $this->notif_model->add($roles);
             }
         }
-        $this->log_model->addLog(userLog('Memperbaharui Role', 'Memperbaharui data role ' . $data['nama_role']));
+        $this->log_model->add(userLog('Memperbaharui Role', 'Memperbaharui data role ' . $data['nama_role']));
         echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil diperbaharui'));
 
         die;
@@ -173,7 +173,7 @@ class Role extends Middleware
         $temp           = $this->role_model->getRoleById($role_id);
         $data['status'] = 2;
         $this->role_model->update($role_id, $data);
-        $this->log_model->addLog(userLog('Menghapus Role', 'Menghapus role '));
+        $this->log_model->add(userLog('Menghapus Role', 'Menghapus role '));
         echo json_encode(array('status' => 'success', 'msg' => 'Role berhasil dihapus'));
 
         die;

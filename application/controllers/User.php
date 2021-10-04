@@ -79,7 +79,7 @@ class User extends Middleware
                     $this->user_role_model->insert($user_role);
                 }
 
-                $this->log_model->addLog(userLog('Menambah User', 'Menambah user "' . $data['nama']));
+                $this->log_model->add(userLog('Menambah User', 'Menambah user "' . $data['nama']));
             }
         }
 
@@ -157,7 +157,7 @@ class User extends Middleware
             }
             // insert notifikasi
             $this->notif_model->add(userNotif("Administrator Mengubah Role User " . $data['nama'], "Memperbaharui Role User", $user_id));
-            $this->log_model->addLog(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
+            $this->log_model->add(userLog('Memperbaharui User', 'Memperbaharui data user ' . $data['nama']));
         } else {
             echo json_encode(array('status' => 'error', 'msg' => 'Anda tidak bisa mengedit data ini'));
         }
@@ -172,7 +172,7 @@ class User extends Middleware
         $data['status'] = 2;
         $this->user_model->update($user_id, $data);
         $this->user_role_model->delete($user_id);
-        $this->log_model->addLog(userLog('Menghapus User', 'Menghapus user '));
+        $this->log_model->add(userLog('Menghapus User', 'Menghapus user '));
         echo json_encode(array('status' => 'success', 'msg' => 'User berhasil dihapus'));
 
         die;
@@ -187,7 +187,7 @@ class User extends Middleware
             $temp             = $this->user_role_model->getById($user_id);
             $data['password'] = hash('sha512', $this->input->post('password'));
             $this->user_model->update($user_id, $data);
-            $this->log_model->addLog(userLog('Memperbaharui User', 'Reset password user ' . $temp[0]->nama));
+            $this->log_model->add(userLog('Memperbaharui User', 'Reset password user ' . $temp[0]->nama));
             echo json_encode(array('status' => 'success', 'msg' => 'Reset Password Berhasil !'));
         }
         die;

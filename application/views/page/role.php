@@ -1,140 +1,3 @@
-<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
-<script type="text/javascript">
-    var id_edit;
-    var id_show;
-
-    function reset_form() {
-        $("#editModalForm")[0].reset();
-        $('.form-line').removeClass('focused');
-    }
-
-    function show_form() {
-        $("#showModalForm")[0].reset();
-        $('.form-line').removeClass('focused');
-    }
-
-    function updateAllTable() {
-        table.ajax.reload(null, false);
-    }
-
-    function add_function() {
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'role/add' ?>',
-            data: $('#add-form').serialize(),
-            dataType: 'json',
-            success: function(resp) {
-                if (resp['status'] == 'success') {
-                    updateAllTable();
-                    $("#add-form")[0].reset();
-                }
-                return swal({
-                    timer: 1300,
-                    showConfirmButton: true,
-                    title: resp['msg'],
-                    type: resp['status']
-                });
-            }
-        });
-    }
-
-    function delete_function(id) {
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'role/delete/' ?>' + id,
-            dataType: 'json',
-            success: function(resp) {
-                updateAllTable();
-                return swal({
-                    timer: 1300,
-                    showConfirmButton: false,
-                    title: resp['msg'],
-                    type: resp['status']
-                });
-            }
-        });
-    }
-
-    function show_function(id) {
-        show_form();
-        $('#showModal').modal();
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'role/show/' ?>' + id,
-            dataType: 'json',
-            success: function(resp) {
-                if (resp.length > 0) {
-                    for (var i = 0; i < resp.length; i++) {
-                        id_show = resp[i]['user_id'];
-                        $('#nama_role').text(resp[i]['nama_role']);
-                        $('#action').text(resp[i]['action'] + " ");
-                    }
-                    $('#showModalForm div[class=form-line]').addClass('focused');
-                }
-            }
-        });
-    }
-
-    function edit_function(task, id) {
-        if (task == 'show') {
-            reset_form();
-            $('#editModal').modal();
-            $.ajax({
-                method: 'POST',
-                url: '<?= base_url() . 'role/edit/' ?>' + id,
-                dataType: 'json',
-                success: function(resp) {
-                    if (resp) {
-                        for (var i = 0; i < resp.length; i++) {
-                            id_edit = resp[i].role_id;
-                            $("#editModalForm input[name=nama_role]").val(resp[i].nama_role);
-                            for (var r = 0; r < resp[i].permission_id.length; r++) {
-                                $(`#editModalForm input[name="permission_id[]"][value="${resp[i].permission_id[r]}"]`)
-                                    .prop('checked', true);
-                            }
-                        }
-                    }
-                }
-            });
-
-        } else if (task == 'save') {
-            $.ajax({
-                method: 'POST',
-                url: '<?= base_url() . 'role/update/' ?>' + id_edit,
-                data: $('#editModalForm').serialize(),
-                dataType: 'json',
-                success: function(resp) {
-                    updateAllTable();
-                    return swal({
-                        html: true,
-                        timer: 1300,
-                        showConfirmButton: false,
-                        title: resp['msg'],
-                        type: resp['status']
-                    });
-                }
-            });
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function(event) {
-        table = $('#table').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?= site_url('role/pagination') ?>",
-                "type": "POST"
-            },
-            "columnDefs": [{
-                "targets": [0],
-                "orderable": false,
-                "className": "center"
-            }],
-        });
-    });
-</script>
-
 <div class="content">
     <div class="clearfix">
         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -283,3 +146,140 @@
         </div>
     </div>
 </div>
+
+<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    var id_edit;
+    var id_show;
+
+    function reset_form() {
+        $("#editModalForm")[0].reset();
+        $('.form-line').removeClass('focused');
+    }
+
+    function show_form() {
+        $("#showModalForm")[0].reset();
+        $('.form-line').removeClass('focused');
+    }
+
+    function updateAllTable() {
+        table.ajax.reload(null, false);
+    }
+
+    function add_function() {
+        $.ajax({
+            method: 'POST',
+            url: '<?= base_url() . 'role/add' ?>',
+            data: $('#add-form').serialize(),
+            dataType: 'json',
+            success: function(resp) {
+                if (resp['status'] == 'success') {
+                    updateAllTable();
+                    $("#add-form")[0].reset();
+                }
+                return swal({
+                    timer: 1300,
+                    showConfirmButton: true,
+                    title: resp['msg'],
+                    type: resp['status']
+                });
+            }
+        });
+    }
+
+    function delete_function(id) {
+        $.ajax({
+            method: 'POST',
+            url: '<?= base_url() . 'role/delete/' ?>' + id,
+            dataType: 'json',
+            success: function(resp) {
+                updateAllTable();
+                return swal({
+                    timer: 1300,
+                    showConfirmButton: false,
+                    title: resp['msg'],
+                    type: resp['status']
+                });
+            }
+        });
+    }
+
+    function show_function(id) {
+        show_form();
+        $('#showModal').modal();
+        $.ajax({
+            method: 'POST',
+            url: '<?= base_url() . 'role/show/' ?>' + id,
+            dataType: 'json',
+            success: function(resp) {
+                if (resp.length > 0) {
+                    for (var i = 0; i < resp.length; i++) {
+                        id_show = resp[i]['user_id'];
+                        $('#nama_role').text(resp[i]['nama_role']);
+                        $('#action').text(resp[i]['action'] + " ");
+                    }
+                    $('#showModalForm div[class=form-line]').addClass('focused');
+                }
+            }
+        });
+    }
+
+    function edit_function(task, id) {
+        if (task == 'show') {
+            reset_form();
+            $('#editModal').modal();
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'role/edit/' ?>' + id,
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp) {
+                        for (var i = 0; i < resp.length; i++) {
+                            id_edit = resp[i].role_id;
+                            $("#editModalForm input[name=nama_role]").val(resp[i].nama_role);
+                            for (var r = 0; r < resp[i].permission_id.length; r++) {
+                                $(`#editModalForm input[name="permission_id[]"][value="${resp[i].permission_id[r]}"]`)
+                                    .prop('checked', true);
+                            }
+                        }
+                    }
+                }
+            });
+
+        } else if (task == 'save') {
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'role/update/' ?>' + id_edit,
+                data: $('#editModalForm').serialize(),
+                dataType: 'json',
+                success: function(resp) {
+                    updateAllTable();
+                    return swal({
+                        html: true,
+                        timer: 1300,
+                        showConfirmButton: false,
+                        title: resp['msg'],
+                        type: resp['status']
+                    });
+                }
+            });
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        table = $('#table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                "url": "<?= site_url('role/pagination') ?>",
+                "type": "POST"
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "orderable": false,
+                "className": "center"
+            }],
+        });
+    });
+</script>

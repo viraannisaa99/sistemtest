@@ -10,6 +10,11 @@ class Notif_model extends CI_Model
         return $this->db->affected_rows() > 0 ? $this->db->insert_id() : FALSE;
     }
 
+    function insert_batch($result)
+    {
+        $this->db->insert_batch('notif', $result);
+    }
+
     function update($id, $data)
     {
         $this->db->where('notif_id', $id);
@@ -17,9 +22,17 @@ class Notif_model extends CI_Model
         return $this->db->affected_rows() > 0 ? TRUE : FALSE;
     }
 
-    function select()
+    function count()
     {
-        $this->db->select('*');
+        $this->db->from('notif');
+        $this->db->where('baca', 0);
+        $this->db->where('user_id', $this->session->userdata('user_id'));
+        return $this->db->count_all_results();
+    }
+
+    function get()
+    {
+        $this->db->select('judul, link');
         $this->db->from('notif');
         $this->db->where('user_id', $this->session->userdata('user_id'));
         $this->db->where('baca', 0);
@@ -29,53 +42,54 @@ class Notif_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    function total_rows()
+    function getNotifByDate($start, $end)
     {
-        $this->db->from('notif');
-        $this->db->where('baca', 0);
-        $this->db->where('user_id', $this->session->userdata('user_id'));
-        return $this->db->count_all_results();
-    }
-
-    function insert_batch($result)
-    {
-        $this->db->insert_batch('notif', $result);
-    }
-
-    function getNotif($limit, $start)
-    {
-        $this->db->join('users pg', 'pg.user_id = lg.user_id');
-        $this->db->from('notif lg');
+        $this->db->join('users pg', 'pg.user_id = nf.user_id');
+        $this->db->from('notif nf');
+        $this->db->where("DATE(nf.tanggal) BETWEEN '$start' AND '$end'");;
         $this->db->where('pg.user_id', $this->session->userdata('user_id'));
-        $this->db->order_by('lg.tanggal', 'desc');
-        $this->db->limit($limit, $start);
+        $this->db->order_by('DATE(nf.tanggal)');
+
+        return $this->db->get()->result();
+    }
+
+    function getNotifByDates()
+    {
+        $start = $this->input->post('start_d');
+        $end = $this->input->post('end_d');
+
+        $this->db->join('users pg', 'pg.user_id = nf.user_id');
+        $this->db->from('notif nf');
+
+        if (!empty($start && $end)) {
+            $this->datatables->where("DATE(nf.tanggal) BETWEEN '$start' AND '$end'"); // if date filter not null then use where
+        }
+
+        $this->db->where('pg.user_id', $this->session->userdata('user_id'));
+        $this->db->order_by('DATE(nf.tanggal)');
+
         return $this->db->get()->result();
     }
 
     function getAllNotif()
     {
-        return $this->datatables
-            ->select('  
+        $start = $this->input->post('start_d');
+        $end = $this->input->post('end_d');
+
+        $this->datatables->select('  
                 nf.judul,
                 nf.tipe,
                 nf.link,
                 nf.tanggal,
                 nf.status
-            ')
-            ->from('notif nf')
-            ->where('nf.user_id', $this->session->userdata('user_id'))
-            ->generate();
-    }
+            ');
+        $this->datatables->from('notif nf');
+        $this->datatables->where('nf.user_id', $this->session->userdata('user_id'));
 
-    function getNotifByDate($start, $end)
-    {
-        $this->db->join('users pg', 'pg.user_id = nf.user_id');
-        $this->db->from('notif nf');
-        $this->db->where('DATE(nf.tanggal) >=', $start);
-        $this->db->where('DATE(nf.tanggal) <=', $end);
-        $this->db->where('pg.user_id', $this->session->userdata('user_id'));
-        $this->db->order_by('DATE(nf.tanggal)');
+        if (!empty($start && $end)) {
+            $this->datatables->where("DATE(nf.tanggal) BETWEEN '$start' AND '$end'"); // if date filter not null then use where
+        }
 
-        return $this->db->get()->result();
+        return $this->datatables->generate();
     }
 }

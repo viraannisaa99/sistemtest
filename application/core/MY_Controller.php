@@ -32,7 +32,7 @@ class Middleware extends CI_Controller
             $permission = $obj . "-" . $action; // permission = user-add, user-show
 
             if (!hasPermission($permission)) {
-                show_404(); // show not found if not has access
+                show_404(); // show not found if doesn't have access
             }
         }
     }

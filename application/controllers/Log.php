@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Log extends Middleware
 {
@@ -34,57 +35,12 @@ class Log extends Middleware
         $this->load->view('index', $data);
     }
 
-    // public function export()
-    // {
-    //     $data['start_date'] = $this->input->post('start_date');
-    //     $data['end_date'] = $this->input->post('end_date');
-
-    //     $data['allLog'] = $this->log_model->getLogByDate($data['start_date'], $data['end_date']);
-
-    //     $spreadsheet = new Spreadsheet;
-
-    //     $spreadsheet->setActiveSheetIndex(0)
-    //         ->setCellValue('A1', 'No')
-    //         ->setCellValue('B1', 'Jenis Aksi')
-    //         ->setCellValue('C1', 'Keterangan')
-    //         ->setCellValue('D1', 'Tanggal')
-    //         ->setCellValue('E1', 'User Id');
-
-    //     $kolom = 2;
-    //     $nomor = 1;
-    //     foreach ($data['allLog'] as $log) {
-    //         $spreadsheet->setActiveSheetIndex(0)
-    //             ->setCellValue('A' . $kolom, $nomor)
-    //             ->setCellValue('B' . $kolom, $log->jenis_aksi)
-    //             ->setCellValue('C' . $kolom, $log->keterangan)
-    //             ->setCellValue('D' . $kolom, date('j F Y', strtotime($log->tgl)))
-    //             ->setCellValue('E' . $kolom, $log->user_id);
-
-    //         $kolom++;
-    //         $nomor++;
-    //     }
-
-    //     $writer = new Xlsx($spreadsheet);
-
-    //     header('Content-Type: application/vnd.ms-excel');
-    //     header('Content-Disposition: attachment;filename="Log.xlsx"');
-    //     header('Cache-Control: max-age=0');
-
-    //     $writer->save('php://output');
-
-    //     $this->load->view('log', $data);
-    // }
-
     public function export()
     {
-        // $data['start_d'] = $this->input->post('start_d');
-        // $data['end_d'] = $this->input->post('end_d');
-
-        $data['start_d'] = "2021-09-18";
-        $data['end_d'] = "2021-09-23";
+        $data['start_d'] = $this->input->post('start_d');
+        $data['end_d'] = $this->input->post('end_d');
 
         $data['allLog'] = $this->log_model->getLogByDate($data['start_d'], $data['end_d']);
-
 
         $spreadsheet = new Spreadsheet;
 
@@ -109,25 +65,11 @@ class Log extends Middleware
             $nomor++;
         }
 
-        $writer = new Xlsx($spreadsheet);
-
-
-        header('Content-Type: application/vnd.ms-excel');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="Log.xlsx"');
-        header('Cache-Control: max-age=0');
-
         $writer->save('php://output');
-        $xlsData = ob_get_contents();
-
-        // echo json_encode($data);
-        // die;
-
-        $response =  array(
-            'op' => 'ok',
-            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
-        );
-
-        die(json_encode($response));
+        die();
     }
 
     public function pagination()
@@ -151,10 +93,5 @@ class Log extends Middleware
         $dt['data'] = $data;
         echo json_encode($dt);
         die;
-    }
-
-    public function filter()
-    {
-        $this->load->view('test');
     }
 }

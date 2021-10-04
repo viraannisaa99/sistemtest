@@ -9,9 +9,7 @@ class Login extends CI_Controller
         $this->load->model('user_model');
         $this->load->model('log_model');
         $this->load->model('permission_model');
-        $this->load->model('login_model');
         $this->load->model('user_role_model');
-        $this->load->model('login_model');
 
         $this->load->helper('userLog');
         $this->load->helper('encrypt');
@@ -36,7 +34,7 @@ class Login extends CI_Controller
             $this->session->set_userdata('user_id', $cek[0]->user_id);
             $this->session->set_userdata('nama', $cek[0]->nama);
             $this->session->set_userdata('logged_in', TRUE);
-            $this->log_model->addLog(userLog('Login', $cek[0]->nama . ' Login ke System'));
+            $this->log_model->add(userLog('Login', $cek[0]->nama . ' Login ke System'));
 
             $this->role();
 
@@ -115,7 +113,7 @@ class Login extends CI_Controller
     public function logout()
     {
         if ($this->session->userdata('user_id')) {
-            $this->log_model->addLog(userLog('Logout', $this->session->userdata('nama') . ' Logout dari System'));
+            $this->log_model->add(userLog('Logout', $this->session->userdata('nama') . ' Logout dari System'));
         }
         $this->session->sess_destroy();
         $this->google->logout();

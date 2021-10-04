@@ -1,172 +1,3 @@
-<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
-<script type="text/javascript">
-    var id_edit;
-    var id_show;
-
-    function reset_form() {
-        $("#editModalForm")[0].reset();
-        $('.form-line').removeClass('focused');
-        // $('#editModalForm select[name=nama_role] option[value=""]').prop("checked", true).trigger('change');
-    }
-
-    function show_form() {
-        $("#showModalForm")[0].reset();
-        $('.form-line').removeClass('focused');
-
-    }
-
-    function updateAllTable() {
-        table.ajax.reload(null, false);
-    }
-
-    function add_function() {
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'user/add' ?>',
-            data: $('#add-form').serialize(),
-            dataType: 'json',
-            success: function(resp) {
-                if (resp['status'] == 'success') {
-                    updateAllTable();
-                    $("#add-form")[0].reset();
-                }
-                return swal({
-                    timer: 1300,
-                    showConfirmButton: true,
-                    title: resp['msg'],
-                    type: resp['status']
-                });
-            }
-        });
-    }
-
-    function delete_function(id) {
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'user/delete/' ?>' + id,
-            dataType: 'json',
-            success: function(resp) {
-                updateAllTable();
-                return swal({
-                    timer: 1300,
-                    showConfirmButton: false,
-                    title: resp['msg'],
-                    type: resp['status']
-                });
-            }
-        });
-    }
-
-    function show_function(id) {
-        show_form();
-        $('#showModal').modal();
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'user/show/' ?>' + id,
-            dataType: 'json',
-            success: function(resp) {
-                if (resp.length > 0) {
-                    for (var i = 0; i < resp.length; i++) {
-                        id_show = resp[i]['user_id'];
-                        $('#nama').text(resp[i]['nama']);
-                        $("#email").text(resp[i]['email']);
-                        $("#username").text(resp[i]['username']);
-                        $("#nama_role").text(resp[i]['nama_role']);
-                    }
-                    $('#showModalForm div[class=form-line]').addClass('focused');
-                }
-            }
-        });
-    }
-
-
-    function edit_function(task, id) {
-        if (task == 'show') {
-            reset_form();
-            $('#editModal').modal();
-            $.ajax({
-                method: 'POST',
-                url: '<?= base_url() . 'user/edit/' ?>' + id,
-                dataType: 'json',
-                success: function(resp) {
-                    if (resp) {
-                        id_edit = resp.user_id;
-                        $("#editModalForm input[name=nama]").val(resp.nama);
-                        $("#editModalForm input[name=email]").val(resp.email);
-                        $("#editModalForm input[name=username]").val(resp.username);
-
-                        resp.role_id.forEach(val => {
-                            $(`#editModalForm input[name="role_id[]"][value="${val}"]`)
-                                .prop('checked', true);
-                        });
-
-                    }
-                }
-            });
-        } else if (task == 'save') {
-            $.ajax({
-                method: 'POST',
-                url: '<?= base_url() . 'user/update/' ?>' + id_edit,
-                data: $('#editModalForm').serialize(),
-                dataType: 'json',
-                success: function(resp) {
-                    updateAllTable();
-                    return swal({
-                        html: true,
-                        timer: 1300,
-                        showConfirmButton: false,
-                        title: resp['msg'],
-                        type: resp['status']
-                    });
-                }
-            });
-        } else if (task == 'reset') {
-            $.ajax({
-                method: 'POST',
-                url: '<?= base_url() . 'user/reset/' ?>' + id_edit,
-                data: $('#resetModalForm').serialize(),
-                dataType: 'json',
-                success: function(resp) {
-                    if (resp['status'] == 'success') {
-                        updateAllTable();
-                    }
-                    $("#editModalForm")[0].reset();
-                    return swal({
-                        html: true,
-                        timer: 1300,
-                        showConfirmButton: false,
-                        title: resp['msg'],
-                        type: resp['status']
-                    });
-                }
-            });
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function(event) {
-        table = $('#table').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "responsive": true,
-            "order": [
-                [0, "desc"]
-            ],
-            "lengthMenu": [
-                [15, 25, 50, -1],
-                [15, 25, 50, "All"]
-            ],
-            "ajax": {
-                "url": "<?= site_url('user/pagination') ?>",
-                "type": "POST"
-            },
-            "columnDefs": [{
-                "targets": [0],
-                "className": "center",
-            }],
-        });
-    });
-</script>
-
 <div class="content">
     <div class="clearfix">
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
@@ -390,3 +221,169 @@
         </div>
     </div>
 </div>
+
+<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    var id_edit;
+    var id_show;
+
+    function reset_form() {
+        $("#editModalForm")[0].reset();
+        $('.form-line').removeClass('focused');
+    }
+
+    function show_form() {
+        $("#showModalForm")[0].reset();
+        $('.form-line').removeClass('focused');
+    }
+
+    function updateAllTable() {
+        table.ajax.reload(null, false);
+    }
+
+    function add_function() {
+        $.ajax({
+            method: 'POST',
+            url: '<?= base_url() . 'user/add' ?>',
+            data: $('#add-form').serialize(),
+            dataType: 'json',
+            success: function(resp) {
+                if (resp['status'] == 'success') {
+                    updateAllTable();
+                    $("#add-form")[0].reset();
+                }
+                return swal({
+                    timer: 1300,
+                    showConfirmButton: true,
+                    title: resp['msg'],
+                    type: resp['status']
+                });
+            }
+        });
+    }
+
+    function delete_function(id) {
+        $.ajax({
+            method: 'POST',
+            url: '<?= base_url() . 'user/delete/' ?>' + id,
+            dataType: 'json',
+            success: function(resp) {
+                updateAllTable();
+                return swal({
+                    timer: 1300,
+                    showConfirmButton: false,
+                    title: resp['msg'],
+                    type: resp['status']
+                });
+            }
+        });
+    }
+
+    function show_function(id) {
+        show_form();
+        $('#showModal').modal();
+        $.ajax({
+            method: 'POST',
+            url: '<?= base_url() . 'user/show/' ?>' + id,
+            dataType: 'json',
+            success: function(resp) {
+                if (resp.length > 0) {
+                    for (var i = 0; i < resp.length; i++) {
+                        id_show = resp[i]['user_id'];
+                        $('#nama').text(resp[i]['nama']);
+                        $("#email").text(resp[i]['email']);
+                        $("#username").text(resp[i]['username']);
+                        $("#nama_role").text(resp[i]['nama_role']);
+                    }
+                    $('#showModalForm div[class=form-line]').addClass('focused');
+                }
+            }
+        });
+    }
+
+    function edit_function(task, id) {
+        if (task == 'show') {
+            reset_form();
+            $('#editModal').modal();
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'user/edit/' ?>' + id,
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp) {
+                        id_edit = resp.user_id;
+                        $("#editModalForm input[name=nama]").val(resp.nama);
+                        $("#editModalForm input[name=email]").val(resp.email);
+                        $("#editModalForm input[name=username]").val(resp.username);
+
+                        resp.role_id.forEach(val => {
+                            $(`#editModalForm input[name="role_id[]"][value="${val}"]`)
+                                .prop('checked', true);
+                        });
+
+                    }
+                }
+            });
+        } else if (task == 'save') {
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'user/update/' ?>' + id_edit,
+                data: $('#editModalForm').serialize(),
+                dataType: 'json',
+                success: function(resp) {
+                    updateAllTable();
+                    return swal({
+                        html: true,
+                        timer: 1300,
+                        showConfirmButton: false,
+                        title: resp['msg'],
+                        type: resp['status']
+                    });
+                }
+            });
+        } else if (task == 'reset') {
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'user/reset/' ?>' + id_edit,
+                data: $('#resetModalForm').serialize(),
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp['status'] == 'success') {
+                        updateAllTable();
+                    }
+                    $("#editModalForm")[0].reset();
+                    return swal({
+                        html: true,
+                        timer: 1300,
+                        showConfirmButton: false,
+                        title: resp['msg'],
+                        type: resp['status']
+                    });
+                }
+            });
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        table = $('#table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "responsive": true,
+            "order": [
+                [0, "desc"]
+            ],
+            "lengthMenu": [
+                [15, 25, 50, -1],
+                [15, 25, 50, "All"]
+            ],
+            "ajax": {
+                "url": "<?= site_url('user/pagination') ?>",
+                "type": "POST"
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "className": "center",
+            }],
+        });
+    });
+</script>

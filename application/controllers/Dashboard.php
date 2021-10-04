@@ -27,12 +27,7 @@ class Dashboard extends CI_Controller
         $data['jumlah_user']        = $this->user_model->countUserByLevel();
         $data['jumlah_admin']       = $this->user_model->countUserByLevel('Administrator');
         $data['jumlah_pegawai']     = $this->user_model->countUserByLevel('Pegawai');
-        $data['jumlah_kunjungan']   = $this->log_model->countLog()->result();
-        $data['logGraph']              = $this->log_model->logGraph();
-        $data['countLogGraph']         = $this->log_model->countLogGraph()->result();
-
-        $data['userGraph']          = $this->log_model->userLogGraph();
-        $data['countUserGraph']     = $this->log_model->countUserLogGraph()->result();
+        $data['jumlah_kunjungan']   = $this->log_model->count()->result();
 
         $config['base_url']     = site_url('dashboard/index');
         $config['total_rows']   = 30;
@@ -44,5 +39,35 @@ class Dashboard extends CI_Controller
         $data['links'] = $this->pagination->create_links();
 
         $this->load->view('index', $data);
+    }
+
+    public function weekBar()
+    {
+        $logGraph          = $this->log_model->logGraph();
+
+        $data = array();
+        foreach ($logGraph as $row) {
+            $tgl[]  = date('Y-m-d', strtotime($row->tgl));
+            $total[] = $row->total;
+        }
+
+        $data = array("tgl" => $tgl, "total" => $total);
+        echo json_encode($data);
+        die;
+    }
+
+    public function roleBar()
+    {
+        $userGraph          = $this->log_model->userLogGraph();
+
+        $data = array();
+        foreach ($userGraph as $row) {
+            $nama_role[]  = $row->nama_role;
+            $total[] = $row->total;
+        }
+
+        $data = array("nama_role" => $nama_role, "total" => $total);
+        echo json_encode($data);
+        die;
     }
 }

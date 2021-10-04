@@ -1,17 +1,17 @@
 <script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
 
 <style>
-ul.list-group.list-group-striped li:nth-of-type(odd) {
-    background: #edf2fb;
-}
+    ul.list-group.list-group-striped li:nth-of-type(odd) {
+        background: #edf2fb;
+    }
 
-ul.list-group.list-group-striped li:nth-of-type(even) {
-    background: #d7e3fc;
-}
+    ul.list-group.list-group-striped li:nth-of-type(even) {
+        background: #d7e3fc;
+    }
 
-ul.list-group.list-group-hover li:hover {
-    background: #CCCCFF;
-}
+    ul.list-group.list-group-hover li:hover {
+        background: #CCCCFF;
+    }
 </style>
 
 <div class="content">
@@ -132,7 +132,6 @@ ul.list-group.list-group-hover li:hover {
             </div>
         </div>
     </div>
-
     <div class="row clearfix">
         <div class="col-md-12">
             <div class="card">
@@ -144,17 +143,16 @@ ul.list-group.list-group-hover li:hover {
                     <ul class="list-group list-group-hover list-group-striped">
                         <?php $i = 1;
                         foreach ($log as $row) : ?>
-                        <li class="list-group-item list-group-item d-flex justify-content-between align-items-center">
-                            <div class="flex-column">
-                                <h4><b><?= $row->nama ?></b></h4>
-                                <?= $row->keterangan ?>
-                            </div>
-                            <div class="flex-column">
-                                <h4><span
-                                        class="badge badge-info badge-pill"><?= time_passed(strtotime($row->tgl)) ?></span>
-                                </h4>
-                            </div>
-                        </li>
+                            <li class="list-group-item list-group-item d-flex justify-content-between align-items-center">
+                                <div class="flex-column">
+                                    <h4><b><?= $row->nama ?></b></h4>
+                                    <?= $row->keterangan ?>
+                                </div>
+                                <div class="flex-column">
+                                    <h4><span class="badge badge-info badge-pill"><?= time_passed(strtotime($row->tgl)) ?></span>
+                                    </h4>
+                                </div>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                     <div class="card-footer">
@@ -166,75 +164,55 @@ ul.list-group.list-group-hover li:hover {
     </div>
 </div>
 
-<!-- Log graph perminggu -->
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script type="text/javascript">
-var ctx = document.getElementById('myChart').getContext('2d');
-var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
-gradientStroke.addColorStop(0, "#80b6f4");
-gradientStroke.addColorStop(1, "#f49080");
+    var ctx = document.getElementById('myChart').getContext('2d');
 
-var chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: [
-            <?php
-                if (count($logGraph) > 0) {
-                    foreach ($logGraph as $data) {
-                        $tgl = indo_date($data->tgl); // label
-                        echo "'" . $tgl . "',";
-                    }
-                }
-                ?>
-        ],
-        datasets: [{
-            label: 'Jumlah Kunjungan',
-            backgroundColor: gradientStroke,
-            borderColor: '#93C3D2',
-            data: [
-                <?php
-                    if (count($countLogGraph) > 0) {
-                        foreach ($countLogGraph as $data) {
-                            echo $data->total . ", "; // chart by count
-                        }
-                    }
-                    ?>
-            ]
-        }]
-    },
-});
-</script>
+    var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, "#80b6f4");
+    gradientStroke.addColorStop(1, "#f49080");
 
-<!-- Log Graph per role -->
-<script type="text/javascript">
-var ctx = document.getElementById('userChart').getContext('2d');
-var chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: [
-            <?php
-                if (count($userGraph) > 0) {
-                    foreach ($userGraph as $data) {
-                        echo "'" . $data->nama_role . "',";
+    $(document).ready(function() {
+        // Log graph per week
+        $.ajax({
+            url: "<?= base_url() . 'dashboard/weekBar/' ?>",
+            success: function(data) {
+                var parse = jQuery.parseJSON(data);
+                var chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: parse.tgl,
+                        datasets: [{
+                            label: 'Jumlah Kunjungan',
+                            backgroundColor: gradientStroke,
+                            borderColor: '#93C3D2',
+                            data: parse.total
+                        }]
                     }
-                }
-                ?>
-        ],
-        datasets: [{
-            label: 'Jumlah Kunjungan',
-            backgroundColor: gradientStroke,
-            borderColor: gradientStroke,
-            data: [
-                <?php
-                    if (count($countUserGraph) > 0) {
-                        foreach ($countUserGraph as $data) {
-                            echo $data->total . ", ";
-                        }
+                });
+            }
+        });
+
+        // Log Graph per role
+        $.ajax({
+            url: "<?= base_url() . 'dashboard/roleBar/' ?>",
+            success: function(data) {
+                var parse = jQuery.parseJSON(data);
+
+                var ctx = document.getElementById('userChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: parse.nama_role,
+                        datasets: [{
+                            label: 'Jumlah Kunjungan',
+                            backgroundColor: gradientStroke,
+                            borderColor: '#93C3D2',
+                            data: parse.total
+                        }]
                     }
-                    ?>
-            ]
-        }]
-    },
-});
+                });
+            }
+        });
+    });
 </script>

@@ -4,12 +4,6 @@ if (!defined('BASEPATH'))
 
 class Role_model extends CI_Model
 {
-
-    function getRoleById($id)
-    {
-        return $this->db->get_where('role pg', array('pg.role_id' => $id))->result();
-    }
-
     function update($id, $data)
     {
         $this->db->where('role_id', $id);
@@ -31,6 +25,11 @@ class Role_model extends CI_Model
     public function getRoles()
     {
         return $this->db->get('role');
+    }
+
+    function getRoleById($id)
+    {
+        return $this->db->get_where('role pg', array('pg.role_id' => $id))->result();
     }
 
     function getAllRole()

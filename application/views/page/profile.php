@@ -1,61 +1,3 @@
-<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
-<script type="text/javascript">
-var id_edit;
-
-function edit_function(task, id) {
-    if (task == 'show') {
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'profile/edit/' ?>',
-            dataType: 'json',
-            success: function(resp) {
-                if (resp) {
-                    $("#editForm input[name=nama]").val(resp.nama);
-                    $("#editForm input[name=email]").val(resp.email);
-                    $("#editForm input[name=username]").val(resp.username);
-                }
-            }
-        });
-    } else if (task == 'save') {
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'profile/update/' ?>',
-            data: $('#editForm').serialize(),
-            dataType: 'json',
-            success: function(resp) {
-                return swal({
-                    html: true,
-                    timer: 1300,
-                    showConfirmButton: false,
-                    title: resp['msg'],
-                    type: resp['status']
-                });
-            }
-        });
-    } else if (task == 'reset') {
-        $.ajax({
-            method: 'POST',
-            url: '<?= base_url() . 'user/reset/' ?>',
-            data: $('#resetForm').serialize(),
-            dataType: 'json',
-            success: function(resp) {
-                if (resp['status'] == 'success') {
-
-                }
-
-                return swal({
-                    html: true,
-                    timer: 1300,
-                    showConfirmButton: false,
-                    title: resp['msg'],
-                    type: resp['status']
-                });
-            }
-        });
-    }
-}
-</script>
-
 <div class="content">
     <div class="clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -73,9 +15,7 @@ function edit_function(task, id) {
                                         <p class="text-secondary mb-1">
                                             <?= ($profile->status == 1) ? 'Active' : 'Non Active'; ?></p>
                                         <!-- <p class="text-muted font-size-sm">Bay Area, San Francisco, CA</p> -->
-                                        <button class="btn btn-primary" class="btn bg-blue col-white waves-effect"
-                                            data-toggle="collapse" data-target="#collapseExample" aria-expanded="false"
-                                            aria-controls="collapseExample">Reset Password</button>
+                                        <button class="btn btn-primary" class="btn bg-blue col-white waves-effect" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Reset Password</button>
                                     </div>
                                 </div>
                             </div>
@@ -84,24 +24,19 @@ function edit_function(task, id) {
                             <div class="card mt-3">
                                 <?= form_open('user', array('id' => 'resetForm', 'autocomplete' => "off")); ?>
                                 <ul class="list-group list-group-flush">
-                                    <li
-                                        class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                                         <div class="col-sm-12 text-secondary">
-                                            <input type="password" name="password" class="form-control"
-                                                placeholder="New Password">
+                                            <input type="password" name="password" class="form-control" placeholder="New Password">
                                         </div>
                                     </li>
-                                    <li
-                                        class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                                         <div class="col-sm-12 text-secondary">
-                                            <input type="password" name="confirm_password" class="form-control"
-                                                placeholder="Confirm Password">
+                                            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password">
                                         </div>
                                     </li>
                                 </ul>
                                 <?= form_close() ?>
-                                <button type="button" class="btn bg-green waves-effect col-white"
-                                    onClick="edit_function('reset')">RESET PASSWORD</button>
+                                <button type="button" class="btn bg-green waves-effect col-white" onClick="edit_function('reset')">RESET PASSWORD</button>
                             </div>
                         </div>
                     </div>
@@ -114,8 +49,7 @@ function edit_function(task, id) {
                                         <h6 class="mb-0">Nama</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" name="nama" class="form-control"
-                                            value="<?= $profile->nama ?>">
+                                        <input type="text" name="nama" class="form-control" value="<?= $profile->nama ?>">
                                     </div>
                                 </div>
                                 <hr>
@@ -124,8 +58,7 @@ function edit_function(task, id) {
                                         <h6 class="mb-0">Username</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" name="username" class="form-control"
-                                            value="<?= $profile->username ?>">
+                                        <input type="text" name="username" class="form-control" value="<?= $profile->username ?>">
                                     </div>
                                 </div>
                                 <hr>
@@ -134,8 +67,7 @@ function edit_function(task, id) {
                                         <h6 class="mb-0">Email</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" name="email" class="form-control"
-                                            value="<?= $profile->email ?>">
+                                        <input type="text" name="email" class="form-control" value="<?= $profile->email ?>">
                                     </div>
                                 </div>
                                 <hr>
@@ -160,8 +92,7 @@ function edit_function(task, id) {
                                 <?= form_close() ?>
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <button type="submit" class="btn btn-primary px-4"
-                                            onClick="edit_function('save')">Edit Profile</button>
+                                        <button type="submit" class="btn btn-primary px-4" onClick="edit_function('save')">Edit Profile</button>
                                     </div>
                                 </div>
                             </div>
@@ -171,5 +102,62 @@ function edit_function(task, id) {
             </div>
         </div>
     </div>
-
 </div>
+
+<script src="<?= base_url() . 'assets/' ?>plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    var id_edit;
+
+    function edit_function(task, id) {
+        if (task == 'show') {
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'profile/edit/' ?>',
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp) {
+                        $("#editForm input[name=nama]").val(resp.nama);
+                        $("#editForm input[name=email]").val(resp.email);
+                        $("#editForm input[name=username]").val(resp.username);
+                    }
+                }
+            });
+        } else if (task == 'save') {
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'profile/update/' ?>',
+                data: $('#editForm').serialize(),
+                dataType: 'json',
+                success: function(resp) {
+                    return swal({
+                        html: true,
+                        timer: 1300,
+                        showConfirmButton: false,
+                        title: resp['msg'],
+                        type: resp['status']
+                    });
+                }
+            });
+        } else if (task == 'reset') {
+            $.ajax({
+                method: 'POST',
+                url: '<?= base_url() . 'profile/reset/' ?>',
+                data: $('#resetForm').serialize(),
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp['status'] == 'success') {
+
+                    }
+
+                    return swal({
+                        html: true,
+                        timer: 1300,
+                        showConfirmButton: false,
+                        title: resp['msg'],
+                        type: resp['status']
+                    });
+                }
+            });
+        }
+    }
+</script>

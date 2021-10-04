@@ -5,7 +5,7 @@ if (!defined('BASEPATH'))
 class Log_model extends CI_Model
 {
 
-    function countLog()
+    function count()
     {
         $this->db->select('count(*) as total');
         $this->db->from('log');
@@ -13,7 +13,7 @@ class Log_model extends CI_Model
         return $this->db->get();
     }
 
-    function addLog($data)
+    function add($data)
     {
         $this->db->insert('log', $data);
         if ($this->db->affected_rows() > 0) {
@@ -39,42 +39,21 @@ class Log_model extends CI_Model
 
     public function logGraph()
     {
-        $this->db->select('*');
+        $this->db->select('tgl, count(*) as total');
         $this->db->from('log');
         $this->db->group_by('WEEK(tgl)');
         return $this->db->get()->result();
-    }
-
-    public function countLogGraph()
-    {
-        $this->db->select('count(*) as total');
-        $this->db->from('log');
-        $this->db->group_by('WEEK(tgl)');
-
-        return $this->db->get();
     }
 
     public function userLogGraph()
     {
-        $this->db->select('*');
+        $this->db->select('rl.nama_role, count(lg.log_id) as total');
         $this->db->from('log lg');
         $this->db->join('users pg', 'pg.user_id = lg.user_id');
         $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
         $this->db->join('role rl', 'rl.role_id = ur.role_id');
         $this->db->group_by('rl.role_id');
         return $this->db->get()->result();
-    }
-
-    public function countUserLogGraph()
-    {
-        $this->db->select('count(lg.log_id) as total');
-        $this->db->from('log lg');
-        $this->db->join('users pg', 'pg.user_id = lg.user_id');
-        $this->db->join('user_role ur', 'pg.user_id = ur.user_id');
-        $this->db->join('role rl', 'rl.role_id = ur.role_id');
-        $this->db->group_by('rl.role_id');
-
-        return $this->db->get();
     }
 
     function getAllLog()
@@ -103,20 +82,6 @@ class Log_model extends CI_Model
         $this->db->from('log lg');
         $this->db->where('DATE(lg.tgl) >=', $start);
         $this->db->where('DATE(lg.tgl) <=', $end);
-        $this->db->where('pg.user_id', $this->session->userdata('user_id'));
-        $this->db->order_by('DATE(lg.tgl)');
-
-        return $this->db->get()->result();
-    }
-
-    function getLogWithoutDate()
-    {
-        $start = $this->input->post('start_d');
-        $end = $this->input->post('end_d');
-
-        $this->db->join('users pg', 'pg.user_id = lg.user_id');
-        $this->db->from('log lg');
-        $this->db->where("DATE(lg.tgl) BETWEEN '$start' AND '$end'");
         $this->db->where('pg.user_id', $this->session->userdata('user_id'));
         $this->db->order_by('DATE(lg.tgl)');
 

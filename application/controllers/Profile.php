@@ -51,6 +51,14 @@ class Profile extends Middleware
         }
     }
 
+    public function check_permission()
+    {
+        print_r($this->session->userdata('role_id'));
+        print_r($this->session->userdata('permissions'));
+        print_r($this->session->userdata('user_id'));
+        // print_r($this->session->userdata('userData'));
+    }
+
     public function update()
     {
         $user_id          = $this->session->userdata('user_id');
@@ -60,7 +68,7 @@ class Profile extends Middleware
 
         $this->user_model->update($user_id, $data);
 
-        $this->log_model->addLog(userLog('Memperbaharui Profile', $data['nama'] . ' Memperbaharui profile nya'));
+        $this->log_model->add(userLog('Memperbaharui Profile', $data['nama'] . ' Memperbaharui profile nya'));
 
         echo json_encode(array('status' => 'success', 'msg' => 'User berhasil diperbaharui'));
 
